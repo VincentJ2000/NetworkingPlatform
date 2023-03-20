@@ -13,6 +13,7 @@ const apiCall = (path, method, body) => {
       if (method === 'GET') {
         // Come back to this
       } else {
+        console.log(body);
         options.body = JSON.stringify(body);
       }
       if (localStorage.getItem('token')) {
@@ -69,8 +70,8 @@ document.getElementById('close-modal').addEventListener('click', () => {
 //login function
 document.getElementById('login-button').addEventListener('click', () => {
     const payload = {
-        email: document.getElementById('user-email').value,
-        password: document.getElementById('user-password').value
+        email: document.getElementById('login-email').value,
+        password: document.getElementById('login-password').value
     }
     apiCall('auth/login', 'POST', payload)
         .then((data) => {
