@@ -115,7 +115,9 @@ const populateFeed = () => {
 
             const cardText3 = document.createElement("p");
             cardText3.classList.add("card-text");
-            cardText3.textContent = "Creator: " + feedItem.creatorId;
+            getUserData(feedItem.creatorId).then((data) => {
+              cardText3.textContent = "Creator: " + data.name;
+            })
 
             const cardText5 = document.createElement("p");
             cardText5.classList.add("card-text");
@@ -148,14 +150,14 @@ const populateFeed = () => {
 };
 
 //get user name
-// const getUserData = (id) => {
-//   return new Promise((resolve, reject) => {
-//     apiCall('user', 'GET', {}, `?userId=${id}`)
-//       .then((data) => {
-//         resolve(data);
-//       })
-//   });
-// }
+const getUserData = (id) => {
+  return new Promise((resolve, reject) => {
+    apiCall('user', 'GET', {}, `?userId=${id}`)
+      .then((data) => {
+        resolve(data);
+      })
+  });
+}
 
 
 //helper functions
