@@ -17,6 +17,12 @@
         "74869": true
       }
     },
+    "44782": {
+      "email": "vin@123.com",
+      "name": "vinvin",
+      "password": "123",
+      "watcheeUserIds": {}
+    },
     "74869": {
       "email": "betty@email.com",
       "name": "Betty",
@@ -29,6 +35,12 @@
       "email": "vincent@unsw.edu.au",
       "name": "vincent",
       "password": "helloworld",
+      "watcheeUserIds": {}
+    },
+    "93602": {
+      "email": "sheina@hello.com",
+      "name": "sheina",
+      "password": "123",
       "watcheeUserIds": {}
     }
   },

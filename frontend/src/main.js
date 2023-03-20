@@ -2,7 +2,7 @@ import { BACKEND_PORT } from './config.js';
 // A helper you may want to use when uploading new images to the server.
 import { fileToDataUrl } from './helpers.js';
 
-const apiCall = (path, method, body) => {
+const apiCall = (path, method, body, arg) => {
     return new Promise((resolve, reject) => {
       const options = {
         method: method,
@@ -12,6 +12,7 @@ const apiCall = (path, method, body) => {
       };
       if (method === 'GET') {
         // Come back to this
+        path = path + arg;
       } else {
         console.log(body);
         options.body = JSON.stringify(body);
@@ -19,13 +20,12 @@ const apiCall = (path, method, body) => {
       if (localStorage.getItem('token')) {
         options.headers.Authorization = `Bearer ${localStorage.getItem('token')}`;
       }
-  
       fetch('http://localhost:5005/' + path, options)
         .then((response) => response.json())
         .then((data) => {
           if (data.error) {
-            console.log(data.error);
             showErrorModal(data.error);
+            alert(data.error);
           } else {
             resolve(data);
           }
@@ -39,7 +39,8 @@ document.getElementById('register-button').addEventListener('click', () => {
     const password =  document.getElementById('user-password').value;
     const confirmPassword = document.getElementById('user-password-confirmation').value;
     if (password !== confirmPassword) {
-      showErrorModal("Confirm password doest not match.");
+      // showErrorModal("Confirm password doest not match.");
+      alert("Confirm password doest not match.");
     } else {
       const payload = {
           email: document.getElementById('user-email').value,
@@ -79,6 +80,84 @@ document.getElementById('login-button').addEventListener('click', () => {
         });
 });
 
+//Get Job feed
+const populateFeed = () => {
+    apiCall('job/feed', 'GET', {}, "?start=0")
+    .then((data) => {
+        document.getElementById('feed-items').textContent = '';
+        for (const feedItem of data) {
+            console.log(feedItem)
+  
+            const card = document.createElement("div");
+            card.classList.add("card");
+            card.classList.add("mb-3");
+
+            const cardImage = document.createElement("img");
+            cardImage.classList.add("card-img-top");
+            cardImage.setAttribute("src", feedItem.image);
+            cardImage.setAttribute("alt", "Job Image");
+            cardImage.setAttribute("style", "max-width: 100%; height: 200px;");
+
+            const cardBody = document.createElement("div");
+            cardBody.classList.add("card-body");
+
+            const cardTitle = document.createElement("h3");
+            cardTitle.classList.add("card-title");
+            cardTitle.textContent = feedItem.title;
+
+            const cardText1 = document.createElement("p");
+            cardText1.classList.add("card-text");
+            cardText1.textContent = feedItem.description;
+
+            const cardText4 = document.createElement("p");
+            cardText4.classList.add("card-text");
+            cardText4.textContent = "Start Date: " + feedItem.start;
+
+            const cardText3 = document.createElement("p");
+            cardText3.classList.add("card-text");
+            cardText3.textContent = "Creator: " + feedItem.creatorId;
+
+            const cardText5 = document.createElement("p");
+            cardText5.classList.add("card-text");
+            cardText5.textContent = "Likes: ";
+
+            const cardText6 = document.createElement("p");
+            cardText6.classList.add("card-text");
+            cardText6.textContent = "Comments: ";
+
+            const cardText2 = document.createElement("p");
+            cardText2.classList.add("card-text");
+
+            const cardText2Small = document.createElement("small");
+            cardText2Small.classList.add("text-muted");
+            cardText2Small.textContent = getDate(feedItem.createdAt);
+
+            cardText2.appendChild(cardText2Small);
+            cardBody.appendChild(cardTitle);
+            cardBody.appendChild(cardText4);
+            cardBody.appendChild(cardText1);
+            cardBody.appendChild(cardText3);
+            cardBody.appendChild(cardText5);
+            cardBody.appendChild(cardText6);
+            cardBody.appendChild(cardText2);
+            card.appendChild(cardImage);
+            card.appendChild(cardBody);
+            document.getElementById('feed-items').appendChild(card);
+        }
+    });
+};
+
+//get user name
+// const getUserData = (id) => {
+//   return new Promise((resolve, reject) => {
+//     apiCall('user', 'GET', {}, `?userId=${id}`)
+//       .then((data) => {
+//         resolve(data);
+//       })
+//   });
+// }
+
+
 //helper functions
 const show = (element) => {
     document.getElementById(element).classList.remove('hide');
@@ -90,8 +169,28 @@ const setToken = (token) => {
     localStorage.setItem('token', token);
     show('section-logged-in');
     hide('section-logged-out');
-    //populateFeed();
+    populateFeed();
 }
+const getDate = (dateString) => {
+    const givenDate = new Date(dateString);
+    const currentDate = new Date();
+    const difference = currentDate - givenDate;
+    const diffHours = Math.floor(difference / (1000 * 60 * 60));
+    const diffMinutes = Math.floor((difference % (1000 * 60 * 60)) / (1000 * 60));
+    if (diffHours > 24){
+        const year = givenDate.getFullYear();
+        const month = givenDate.getMonth() + 1; // Adding 1 because getMonth() returns a zero-based index
+        const day = givenDate.getDate();
+        return "Posted on " + day + "/" + month + "/" + year;
+    }else{
+      if (diffHours <= 0){
+        return "Posted " + diffMinutes + " minutes ago";
+      }else{
+        return "Posted " +diffHours+ " hours and " + diffMinutes + " minutes ago";
+      }
+    }
+}
+
 
 //logged in section
 document.getElementById('nav-register').addEventListener('click', () => {
@@ -116,6 +215,6 @@ document.getElementById('logout').addEventListener('click', () => {
 if (localStorage.getItem('token')) {
     show('section-logged-in');
     hide('section-logged-out');
-    //populateFeed();
+    populateFeed();
 }
   
