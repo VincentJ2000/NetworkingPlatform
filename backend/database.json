@@ -1,5 +1,11 @@
 {
   "users": {
+    "52947": {
+      "email": "vincent@unsw.edu.au",
+      "name": "vincent",
+      "password": "helloworld",
+      "watcheeUserIds": {}
+    },
     "65687": {
       "email": "betty@email.com",
       "name": "Betty",
