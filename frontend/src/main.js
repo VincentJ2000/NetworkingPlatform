@@ -23,7 +23,8 @@ const apiCall = (path, method, body) => {
         .then((response) => response.json())
         .then((data) => {
           if (data.error) {
-            alert(data.error);
+            console.log(data.error);
+            showErrorModal(data.error);
           } else {
             resolve(data);
           }
@@ -34,15 +35,35 @@ const apiCall = (path, method, body) => {
 
 //register function
 document.getElementById('register-button').addEventListener('click', () => {
-    const payload = {
-        email: document.getElementById('user-email').value,
-        password: document.getElementById('user-password').value,
-        name: document.getElementById('user-name').value,
+    const password =  document.getElementById('user-password').value;
+    const confirmPassword = document.getElementById('user-password-confirmation').value;
+    if (password !== confirmPassword) {
+      showErrorModal("Confirm password doest not match.");
+    } else {
+      const payload = {
+          email: document.getElementById('user-email').value,
+          password: document.getElementById('user-password').value,
+          name: document.getElementById('user-name').value,
+      }
+
+      apiCall('auth/register', 'POST', payload)
+          .then((data) => {
+            setToken(data.token);
+          });
     }
-    apiCall('auth/register', 'POST', payload)
-        .then((data) => {
-        setToken(data.token);
-        });
+});
+
+const showErrorModal = (errorMessage) => {
+  document.getElementById('modal-backdrop').style.display = 'block';
+  document.getElementById('modal-container').style.display = 'block';
+  document.getElementById('modal-container').classList.add('show');
+  document.getElementById('modal-text').innerText = errorMessage;
+}
+
+document.getElementById('close-modal').addEventListener('click', () => {
+    document.getElementById('modal-backdrop').style.display = 'none';
+    document.getElementById('modal-container').style.display = 'none';
+    document.getElementById('modal-container').classList.remove('show');
 });
   
 //login function
@@ -53,7 +74,7 @@ document.getElementById('login-button').addEventListener('click', () => {
     }
     apiCall('auth/login', 'POST', payload)
         .then((data) => {
-        setToken(data.token);
+          setToken(data.token);
         });
 });
 
@@ -73,6 +94,7 @@ const setToken = (token) => {
 
 //logged in section
 document.getElementById('nav-register').addEventListener('click', () => {
+    
     show('register-page');
     hide('login-page');
 });

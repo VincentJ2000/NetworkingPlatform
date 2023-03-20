@@ -13,3 +13,7 @@ html, body {
 .nav-item:hover {
     cursor: pointer;
 }
+
+.modal-header {
+    background-color: lightcoral;
+}

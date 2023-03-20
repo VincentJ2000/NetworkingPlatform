@@ -1,55 +1,48 @@
 {
   "users": {
-    "52947": {
-      "email": "vincent@unsw.edu.au",
-      "name": "vincent",
-      "password": "helloworld",
-      "watcheeUserIds": {}
-    },
-    "65687": {
-      "email": "betty@email.com",
-      "name": "Betty",
-      "password": "cardigan",
-      "watcheeUserIds": {}
-    },
-    "95112": {
-      "email": "augustine@email.com",
-      "name": "Augustine",
-      "password": "august",
-      "watcheeUserIds": {
-        "65687": true
-      }
-    },
-    "97467": {
+    "22800": {
       "email": "james@email.com",
       "name": "James",
       "password": "betty",
       "watcheeUserIds": {
-        "65687": true,
-        "95112": true
+        "37672": true,
+        "74869": true
       }
+    },
+    "37672": {
+      "email": "augustine@email.com",
+      "name": "Augustine",
+      "password": "august",
+      "watcheeUserIds": {
+        "74869": true
+      }
+    },
+    "74869": {
+      "email": "betty@email.com",
+      "name": "Betty",
+      "password": "cardigan",
+      "watcheeUserIds": {
+        "37672": true
+      }
+    },
+    "80809": {
+      "email": "vincent@unsw.edu.au",
+      "name": "vincent",
+      "password": "helloworld",
+      "watcheeUserIds": {}
     }
   },
   "posts": {
-    "865058": {
-      "id": "865058",
-      "creatorId": 97467,
+    "532829": {
+      "id": "532829",
+      "creatorId": 74869,
       "image": "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAUAAAAFCAYAAACNbyblAAAAHElEQVQI12P4//8/w38GIAXDIBKE0DHxgljNBAAO9TXL0Y4OHwAAAABJRU5ErkJggg==",
       "title": "Hello Kitty Director",
       "start": "2011-10-05T14:48:00.000Z",
       "description": "Dedicated technical wizard with a passion and interest in human relationships",
-      "createdAt": "2022-03-06T01:30:15.850Z",
+      "createdAt": "2023-03-20T05:00:51.449Z",
       "likes": {},
-      "comments": [
-        {
-          "userId": "65687",
-          "comment": "Hello there"
-        },
-        {
-          "userId": "95112",
-          "comment": "Hello there2"
-        }
-      ]
+      "comments": []
     }
   },
   "nextMessageId": 1

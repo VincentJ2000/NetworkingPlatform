@@ -29,19 +29,32 @@
             </nav>
             <div id="register-page">
                 <div class="form-group">
-                    Email: <input class="form-control" id="user-email" type="text" value="vincent@unsw.edu.au" /><br />
-                    Password: <input class="form-control" id="user-password" type="text" value="helloworld" /><br />
-                    Name: <input class="form-control" id="user-name" type="text" value="vincent" /><br />
-                    <button id="register-button">Register</button>
+                    Name: <input class="form-control" id="user-name" type="text" /><br />
+                    Email: <input class="form-control" id="user-email" type="text" /><br />
+                    Password: <input class="form-control" id="user-password" type="text" /><br />
+                    Confirm Password: <input class="form-control" id="user-password-confirmation" type="text" /><br />
+                    <button type="button" class="btn btn-primary" id="register-button">Register</button>
                 </div>
             </div>
             <div id="login-page" class="hide">
                 <div class="form-group">
-                    Email: <input class="form-control" id="user-email" type="text" value="vincent@unsw.edu.au" /><br />
-                    Password: <input class="form-control" id="user-password" type="text" value="helloworld" /><br />
-                    <button id="login-button">Login</button>
+                    Email: <input class="form-control" id="user-email" type="text" /><br />
+                    Password: <input class="form-control" id="user-password" type="text" /><br />
+                    <button type="button" class="btn btn-primary" id="login-button">Login</button>
                 </div>
             </div>
+            <!-- Modal -->
+            <div style="display:none;" class="modal fade" id="modal-container" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+                <div class="modal-dialog" role="document">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h5 class="modal-text" id="modal-text"></h5>
+                            <button type="button" class="btn-close" id="close-modal" data-dismiss="modal" aria-label="Close"></button>
+                        </div>
+                    </div>
+                </div>
+            </div>   
+            <div class="modal-backdrop fade show" id="modal-backdrop" style="display:none;"></div>  
         </div>
     </main>
     <footer>
