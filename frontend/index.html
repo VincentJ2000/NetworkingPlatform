@@ -16,11 +16,57 @@
     </header>
     <main role="main">
         <div id="section-logged-in" class="hide">
-            <button id="create-job-fake">Create Fake Job</button><br />
-            <div id="feed-items">
+            <nav>
+                <div class="nav nav-tabs" id="nav-tab" role="tablist">
+                    <a class="nav-item nav-link active" id="nav-home-tab" data-toggle="tab" data-target="#nav-home" role="tab" aria-controls="nav-home" aria-selected="true">Home</a>
+                    <a class="nav-item nav-link" id="nav-profile-tab" data-toggle="tab" data-target="#nav-profile" role="tab" aria-controls="nav-profile" aria-selected="false">Profile</a>
+                </div>
+            </nav>
+            <div class="tab-content" id="nav-tabContent">
+                <div class="tab-pane fade show active" id="nav-home" role="tabpanel" aria-labelledby="nav-home-tab">
+                    </br>
+                    <button id="create-job-fake">Create Fake Job</button>
+                    </br>
+                    <div id="feed-items"></div>
+                    Woo hoo! logged in :)
+                    <button id="logout">Logout</button>
+                </div>
+                <div class="tab-pane fade" id="nav-profile" role="tabpanel" aria-labelledby="nav-profile-tab">
+                    <div id="my-profile">
+                    </br>
+                        <div class="input-group mb-3">
+                            <div class="input-group-prepend">
+                                <span class="input-group-text" id="inputGroup-sizing-default">ID</span>
+                            </div>
+                            <input type="text" class="form-control" aria-label="id" aria-describedby="inputGroup-sizing-default">
+                        </div>
+                          
+                        <div class="input-group mb-3">
+                            <div class="input-group-prepend">
+                                <span class="input-group-text" id="inputGroup-sizing-default">Email</span>
+                            </div>
+                            <input type="text" class="form-control" aria-label="email" aria-describedby="inputGroup-sizing-default">
+                        </div>
+                          
+                        <div class="input-group mb-3">
+                            <div class="input-group-prepend">
+                                <span class="input-group-text" id="inputGroup-sizing-default">Name</span>
+                            </div>
+                            <input type="text" class="form-control" aria-label="name" aria-describedby="inputGroup-sizing-default">
+                        </div>
+                        <div class="input-group mb-3">
+                            <div class="input-group-prepend">
+                                <span class="input-group-text" id="inputGroup-sizing-default">Watched by</span>
+                            </div>
+                            <input type="text" class="form-control" aria-label="watching" aria-describedby="inputGroup-sizing-default">
+                        </div>
+                        <div class="card text-white bg-secondary mb-3" style="max-width: 18rem;">
+                            <div class="card-header h3">Jobs Created: </div>
+                        </div>
+                        <div id="job-list"></div>
+                    </div>
+                </div>
             </div>
-            Woo hoo! logged in :)
-            <button id="logout">Logout</button>
         </div>
         <div id="section-logged-out">
             <nav>
