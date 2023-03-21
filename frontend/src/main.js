@@ -121,13 +121,45 @@ const populateFeed = () => {
               cardText3.textContent = "Creator: " + data.name;
             })
 
-            const cardText5 = document.createElement("p");
-            cardText5.classList.add("card-text");
-            cardText5.textContent = "Likes: " + feedItem.likes.length;
+            const likesContainer = document.createElement("div");
+            likesContainer.setAttribute("class", "flex-container");
+            const likesInfo = document.createElement("div");
+            likesInfo.setAttribute("class", "flex-item");
+            likesInfo.textContent = likesList(feedItem.likes);
+            likesContainer.appendChild(likesInfo);
 
-            const cardText6 = document.createElement("p");
-            cardText6.classList.add("card-text");
-            cardText6.textContent = "Comments: " + feedItem.comments.length;
+            const likeButton = document.createElement("button");
+            likeButton.setAttribute("class", "flex-item");
+            likeButton.setAttribute("class", "btn btn-primary");
+            likeButton.setAttribute("id", "likeButton");
+            likeButton.textContent = "Like";
+            likeButton.addEventListener("click", () => {
+              let likeState = true;
+
+              if (likeButton.textContent === "Unlike") {
+                likeState = false;
+                likeButton.textContent = "Like";
+                likeButton.setAttribute("class", "btn btn-primary");
+              } else {
+                likeButton.textContent = "Unlike";
+                likeButton.setAttribute("class", "btn btn-secondary")
+              }
+
+              const payload = {
+                id: feedItem.id,
+                turnon: likeState
+              }
+              apiCall('job/like', 'PUT', {}, payload);
+            })
+
+            likesContainer.appendChild(likeButton);
+
+            const commentsContainer = document.createElement("div");
+            commentsContainer.textContent = "Comments: " + feedItem.comments.length;
+            for (comment of feedItem.comments) {
+              const commentDOM = createCommentChild(comment);
+              commentsContainer.appendChild(commentDOM);
+            }
 
             const cardText2 = document.createElement("p");
             cardText2.classList.add("card-text");
@@ -141,8 +173,8 @@ const populateFeed = () => {
             cardBody.appendChild(cardText4);
             cardBody.appendChild(cardText1);
             cardBody.appendChild(cardText3);
-            cardBody.appendChild(cardText5);
-            cardBody.appendChild(cardText6);
+            cardBody.appendChild(likesContainer);
+            cardBody.appendChild(commentsContainer);
             cardBody.appendChild(cardText2);
             card.appendChild(cardImage);
             card.appendChild(cardBody);
@@ -159,6 +191,31 @@ const getUserData = (id) => {
         resolve(data);
       })
   });
+}
+
+// get list of Likes
+const likesList = (arr) => {
+  let list = "Liked by: ";
+  for (user of arr) {
+    list = list + user.userName + ", "
+  }
+  
+  return list.slice(0, -1)
+}
+
+const createCommentChild = (comment) => {
+  const individualComment = document.createElement("div");
+  individualComment.setAttribute("class", "card card-body");
+  const commentTitle = document.createElement("h5");
+  commentTitle.setAttribute("class", "card-title");
+  commentTitle.textContent = comment.userName;
+  const commentInfo = document.createElement("p");
+  commentInfo.setAttribute("class", "card-text");
+  commentInfo.textContent = comment.comment;
+  individualComment.appendChild(commentTitle);
+  individualComment.appendChild(commentInfo);
+
+  return individualComment;
 }
 
 

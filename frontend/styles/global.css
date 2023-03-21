@@ -17,3 +17,8 @@ html, body {
 .modal-header {
     background-color: lightcoral;
 }
+
+.flex-container {
+    display: flex;
+    justify-content: space-between;
+}
