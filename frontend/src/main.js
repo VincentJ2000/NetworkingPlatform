@@ -84,6 +84,8 @@ document.getElementById('login-button').addEventListener('click', () => {
 const populateFeed = () => {
     apiCall('job/feed', 'GET', {}, "?start=0")
     .then((data) => {
+        console.log(data);
+        data.sort((a, b) => b.createdAt - a.createdAt);
         document.getElementById('feed-items').textContent = '';
         for (const feedItem of data) {
             console.log(feedItem)
@@ -111,19 +113,21 @@ const populateFeed = () => {
 
             const cardText4 = document.createElement("p");
             cardText4.classList.add("card-text");
-            cardText4.textContent = "Start Date: " + feedItem.start;
+            cardText4.textContent = "Start Date: " + feedItem.start.substring(0,10);
 
             const cardText3 = document.createElement("p");
             cardText3.classList.add("card-text");
-            cardText3.textContent = "Creator: " + feedItem.creatorId;
+            getUserData(feedItem.creatorId).then((data) => {
+              cardText3.textContent = "Creator: " + data.name;
+            })
 
             const cardText5 = document.createElement("p");
             cardText5.classList.add("card-text");
-            cardText5.textContent = "Likes: ";
+            cardText5.textContent = "Likes: " + feedItem.likes.length;
 
             const cardText6 = document.createElement("p");
             cardText6.classList.add("card-text");
-            cardText6.textContent = "Comments: ";
+            cardText6.textContent = "Comments: " + feedItem.comments.length;
 
             const cardText2 = document.createElement("p");
             cardText2.classList.add("card-text");
@@ -148,14 +152,14 @@ const populateFeed = () => {
 };
 
 //get user name
-// const getUserData = (id) => {
-//   return new Promise((resolve, reject) => {
-//     apiCall('user', 'GET', {}, `?userId=${id}`)
-//       .then((data) => {
-//         resolve(data);
-//       })
-//   });
-// }
+const getUserData = (id) => {
+  return new Promise((resolve, reject) => {
+    apiCall('user', 'GET', {}, `?userId=${id}`)
+      .then((data) => {
+        resolve(data);
+      })
+  });
+}
 
 
 //helper functions
