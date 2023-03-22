@@ -125,7 +125,9 @@ const populateFeed = () => {
             const cardText3 = document.createElement("p");
             cardText3.classList.add("card-text");
             getUserData(feedItem.creatorId).then((data) => {
-              cardText3.textContent = "Creator: " + data.name;
+              cardText3.textContent = "Creator: "
+              const creatorName = createLinkName(data.name,"others-profile","my-screen");
+              cardText3.appendChild(creatorName);
             })
 
             const bottomContainer = document.createElement("div");
@@ -278,10 +280,12 @@ const createModalDOM = (id, title, body) => {
 
   if (id === "likesModal") {
     for (const item of body) {
-      const likeChild = document.createElement("div");
-      likeChild.textContent = item.userName;
-      modalBody.appendChild(likeChild);
+      const likesName = createLinkName(item.userName,"others-profile","my-screen");
+      // const likeChild = document.createElement("div");
+      // likeChild.textContent = likesName;
+      modalBody.appendChild(likesName);
     }
+
   } else if (id === "commentsModal") {
     for (const item of body) {
       const commentChild = createCommentChild(item);
@@ -329,12 +333,16 @@ const createModalDOM = (id, title, body) => {
 }
 
 const createCommentChild = (comment) => {
+
   const individualComment = document.createElement("div");
-  const commentTitle = document.createElement("h5");
-  commentTitle.textContent = comment.userName;
+  // const commentTitle = document.createElement("h5");
+
+  const commentName = createLinkName(comment.userName,"others-profile","my-screen");
+  // commentTitle.textContent = comment.userName;
+
   const commentInfo = document.createElement("p");
   commentInfo.textContent = comment.comment;
-  individualComment.appendChild(commentTitle);
+  individualComment.appendChild(commentName);
   individualComment.appendChild(commentInfo);
 
   return individualComment;
@@ -564,6 +572,7 @@ const setToken = (token, id) => {
     populateFeed();
     navigateTab();
     updateProfile();
+    backButton();
 }
 const getDate = (dateString) => {
     const givenDate = new Date(dateString);
@@ -583,6 +592,25 @@ const getDate = (dateString) => {
         return "Posted " +diffHours+ " hours and " + diffMinutes + " minutes ago";
       }
     }
+}
+const backButton = () => {
+  const backButton = document.getElementById("back-button");
+  backButton.addEventListener('click', () => {
+    show("my-screen");
+    hide("others-profile");
+  })
+}
+const createLinkName = (name,showScreen,hideScreen) => {
+  const creatorLink = document.createElement("a");
+  creatorLink.href = "#";
+  creatorLink.textContent = name;
+  
+  creatorLink.onclick = () => {
+    show(showScreen);
+    hide(hideScreen);
+  };
+  creatorLink.setAttribute("data-bs-dismiss","modal");
+  return creatorLink;
 }
 
 //logged in section
@@ -611,5 +639,6 @@ if (localStorage.getItem('token')) {
     populateFeed();
     navigateTab();
     updateProfile();
+    backButton();
 }
 
