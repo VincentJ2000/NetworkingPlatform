@@ -167,6 +167,13 @@ const populateFeed = () => {
             likeBtn.setAttribute("class", "btn btn-primary");
             likeBtn.setAttribute("id", "likeBtn");
             likeBtn.textContent = "Like";
+            feedItem.likes.forEach((item) => {
+              if (item.userId === parseInt(localStorage.getItem('userId'))) {
+                likeBtn.textContent = "Unlike";
+                likeBtn.setAttribute("class", "btn btn-secondary")
+              }
+            })
+
             likeBtn.addEventListener("click", () => {
               let likeState = true;
 
@@ -175,6 +182,7 @@ const populateFeed = () => {
                 likeBtn.textContent = "Like";
                 likeBtn.setAttribute("class", "btn btn-primary");
               } else {
+                likeState = true;
                 likeBtn.textContent = "Unlike";
                 likeBtn.setAttribute("class", "btn btn-secondary")
               }
