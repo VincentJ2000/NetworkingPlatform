@@ -165,6 +165,13 @@ const populateFeed = () => {
             likeBtn.setAttribute("class", "btn btn-primary");
             likeBtn.setAttribute("id", "likeBtn");
             likeBtn.textContent = "Like";
+            feedItem.likes.forEach((item) => {
+              if (item.userId === parseInt(localStorage.getItem('userId'))) {
+                likeBtn.textContent = "Unlike";
+                likeBtn.setAttribute("class", "btn btn-secondary")
+              }
+            })
+
             likeBtn.addEventListener("click", () => {
               let likeState = true;
 
@@ -173,6 +180,7 @@ const populateFeed = () => {
                 likeBtn.textContent = "Like";
                 likeBtn.setAttribute("class", "btn btn-primary");
               } else {
+                likeState = true;
                 likeBtn.textContent = "Unlike";
                 likeBtn.setAttribute("class", "btn btn-secondary")
               }
@@ -332,7 +340,6 @@ const createCommentChild = (comment) => {
   return individualComment;
 }
 
-
 // Update my profile
 const updateProfile = () => {
   let payload = {
@@ -438,7 +445,7 @@ const getProfile = (id) => {
       inputId.value = data.id;
       inputEmail.value = data.email;
       inputName.value = data.name;
-      inputWatching.value = `Watched by: `;
+      inputWatching.value = "";
     
       if (data.watcheeUserIds.length === 1){
         getUserData(data.watcheeUserIds[0]).then((data) => {
@@ -503,14 +510,12 @@ const getProfile = (id) => {
   });
 }
 
-
-//Navigation for home and my profile
 const navigateTab = () => {
   const navigationLink = document.querySelectorAll('.nav-item.nav-link');
   navigationLink.forEach((link) => {
     link.addEventListener('click', (event) => {
       event.preventDefault();
-      const targetTab = document.querySelector(event.target.dataset.target);
+      const targetTab = document.querySelector(event.target.getAttribute('href'));
       const targetLink = event.target.getAttribute('id');
       
       document.querySelector('.nav-item.nav-link.active').classList.remove('active');
@@ -525,15 +530,23 @@ const navigateTab = () => {
           link.setAttribute('aria-selected', false);
         }
       });
-
+      
       //call get my profile here
-      if(targetLink === "nav-profile-tab"){
+      if(targetLink === "profile"){
         const id = localStorage.getItem('userId');
         getProfile(id);
+      }else if(targetLink === "create-job"){
+        // addJob();
       }
     });
   });
 }
+
+//MILESTONE 5
+//adding a job
+// const addJob = () => {
+
+// }
 
 
 //helper functions
@@ -572,7 +585,6 @@ const getDate = (dateString) => {
     }
 }
 
-
 //logged in section
 document.getElementById('nav-register').addEventListener('click', () => {
     
@@ -592,7 +604,6 @@ document.getElementById('logout').addEventListener('click', () => {
     localStorage.removeItem('userId');
 });
 
-
 //MAIN
 if (localStorage.getItem('token')) {
     show('section-logged-in');
@@ -601,3 +612,4 @@ if (localStorage.getItem('token')) {
     navigateTab();
     updateProfile();
 }
+
