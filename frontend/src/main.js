@@ -93,11 +93,9 @@ document.getElementById('login-button').addEventListener('click', () => {
 const populateFeed = () => {
     apiCall('job/feed', 'GET', {}, "?start=0")
     .then((data) => {
-        console.log(data);
         data.sort((a, b) => b.createdAt - a.createdAt);
         document.getElementById('feed-items').textContent = '';
         for (const feedItem of data) {
-            console.log(feedItem)
   
             const card = document.createElement("div");
             card.classList.add("card");
@@ -221,10 +219,10 @@ const populateFeed = () => {
 
 //get user name
 const getUserData = (id) => {
+
   return new Promise((resolve, reject) => {
     apiCall('user', 'GET', {}, `?userId=${id}`)
       .then((data) => {
-        console.log(data);
         resolve(data);
       })
   });
@@ -334,26 +332,113 @@ const createCommentChild = (comment) => {
   return individualComment;
 }
 
-const getMyProfile = () => {
-  const id = localStorage.getItem('userId');
-  console.log(id);
+
+// Update my profile
+const updateProfile = () => {
+  let payload = {
+    "email": undefined,
+    "password": undefined,
+    "name": undefined,
+    "image": undefined
+  };
+
+  const editButton = document.getElementById("edit-profile");
+  editButton.addEventListener('click', () => {
+    let prevValues = {};
+    const inputs = document.querySelectorAll('input[aria-label="email"], input[aria-label="password"], input[aria-label="name"]');
+    const isEditing = editButton.innerText === 'Edit Profile';
+    inputs.forEach(input => {
+      console.log(input);
+      input.toggleAttribute('readonly', !isEditing);
+      if (isEditing) {
+        prevValues[input.getAttribute('aria-label')] = input.value;
+        input.addEventListener('blur', () => {
+          if (!input.hasAttribute('readonly')) {
+            const label = input.getAttribute('aria-label');
+            const newValue = input.value;
+            const oldValue = prevValues[label];
+            if (newValue !== oldValue) {
+              payload[label] = newValue;
+            }else{
+              payload[label] = undefined;
+            }
+          }
+        });
+      } else {
+        input.removeEventListener('blur', () => {});
+      }
+    });
+    
+    if (isEditing) {
+      editButton.innerText = 'Done';
+    } else {
+      console.log(payload);
+      apiCall('user', 'PUT', payload)
+        .then((data) => {
+          if (data.error) {
+            alert(data.error);
+          }
+        });
+      payload = {
+        "email": undefined,
+        "password": undefined,
+        "name": undefined,
+        "image": undefined
+      };
+      editButton.innerText = 'Edit Profile';
+    }
+  });
+}
+
+//get profile for a user
+const getProfile = (id) => {
   getUserData(id)
   .then((data) => {
-    
       const inputId = document.querySelector('input[aria-label="id"]');
       const inputEmail = document.querySelector('input[aria-label="email"]');
       const inputName = document.querySelector('input[aria-label="name"]');
       const inputWatching = document.querySelector('input[aria-label="watching"]');
-      
+      const inputWatchingProfile = document.getElementById('profile-watched-by');
+      const profilePicture = document.getElementById("my-profile-picture");
+
       inputId.value = '';
       inputEmail.value = '';
       inputName.value = '';
       inputWatching.value = '';
+      inputWatchingProfile.textContent = '';
+      
+      if(data.image){
+        profilePicture.src = data.image;
+      }else{
+        profilePicture.src = '../asset/default.jpeg';
+      }
 
+      const fileInput = document.getElementById("profile-picture-file");
+      fileInput.addEventListener("change", () => {
+        let payload = {
+          "email": undefined,
+          "password": undefined,
+          "name": undefined
+        };
+        const file = fileInput.files[0];
+        fileToDataUrl(file).then((data) => {
+          payload["image"] = data;
+          console.log(payload);
+          apiCall('user', 'PUT', payload)
+          .then((data) => {
+            if(data.error){ 
+              alert(data.error);
+            }
+          })
+          profilePicture.src = data;
+        })
+      })
+      
+      inputWatchingProfile.textContent = data.watcheeUserIds.length;
       inputId.value = data.id;
       inputEmail.value = data.email;
       inputName.value = data.name;
-      inputWatching.value = `Watched by ${data.watcheeUserIds.length} people: `;
+      inputWatching.value = `Watched by: `;
     
       if (data.watcheeUserIds.length === 1){
         getUserData(data.watcheeUserIds[0]).then((data) => {
@@ -373,7 +458,6 @@ const getMyProfile = () => {
       const jobs = data.jobs;
       document.getElementById('job-list').textContent = '';
       for (const jobItem of jobs) {
-          console.log(jobItem)
 
           const card = document.createElement("div");
           card.classList.add("card");
@@ -400,12 +484,6 @@ const getMyProfile = () => {
           cardText4.classList.add("card-text");
           cardText4.textContent = "Start Date: " + jobItem.start.substring(0,10);
 
-          const cardText3 = document.createElement("p");
-          cardText3.classList.add("card-text");
-          getUserData(jobItem.creatorId).then((data) => {
-            cardText3.textContent = "Creator: " + data.name;
-          })
-          
           const cardText2 = document.createElement("p");
           cardText2.classList.add("card-text");
 
@@ -417,7 +495,6 @@ const getMyProfile = () => {
           cardBody.appendChild(cardTitle);
           cardBody.appendChild(cardText4);
           cardBody.appendChild(cardText1);
-          cardBody.appendChild(cardText3);
           cardBody.appendChild(cardText2);
           card.appendChild(cardImage);
           card.appendChild(cardBody);
@@ -426,6 +503,8 @@ const getMyProfile = () => {
   });
 }
 
+
+//Navigation for home and my profile
 const navigateTab = () => {
   const navigationLink = document.querySelectorAll('.nav-item.nav-link');
   navigationLink.forEach((link) => {
@@ -449,7 +528,8 @@ const navigateTab = () => {
 
       //call get my profile here
       if(targetLink === "nav-profile-tab"){
-        getMyProfile();
+        const id = localStorage.getItem('userId');
+        getProfile(id);
       }
     });
   });
@@ -470,6 +550,7 @@ const setToken = (token, id) => {
     hide('section-logged-out');
     populateFeed();
     navigateTab();
+    updateProfile();
 }
 const getDate = (dateString) => {
     const givenDate = new Date(dateString);
@@ -518,5 +599,6 @@ if (localStorage.getItem('token')) {
     hide('section-logged-out');
     populateFeed();
     navigateTab();
+    updateProfile();
 }
   

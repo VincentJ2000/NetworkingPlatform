@@ -34,32 +34,55 @@
                 <div class="tab-pane fade" id="nav-profile" role="tabpanel" aria-labelledby="nav-profile-tab">
                     <div id="my-profile">
                     </br>
+                        <div class="card" style="width: 18rem;">
+                            <img class="card-img-top" id="my-profile-picture" src="..." alt="profile picture">
+                            <div class="input-group mb-3">
+                                <div class="custom-file">
+                                  <input type="file" class="custom-file-input" id="profile-picture-file">
+                                </div>
+                            </div>
+                            <div class="card-body">
+                                <h5 class="card-title">Watched by:</h5>
+                                <h3 class="card-text" id = "profile-watched-by"></h3>
+                            </div>
+                        </div>
+                        <br></br>
+            
                         <div class="input-group mb-3">
                             <div class="input-group-prepend">
-                                <span class="input-group-text" id="inputGroup-sizing-default">ID</span>
+                                <span class="input-group-text" id="inputGroup-sizing-default1">ID</span>
                             </div>
-                            <input type="text" class="form-control" aria-label="id" aria-describedby="inputGroup-sizing-default">
+                            <input type="text" class="form-control" aria-label="id" aria-describedby="inputGroup-sizing-default" readonly>
                         </div>
                           
                         <div class="input-group mb-3">
                             <div class="input-group-prepend">
-                                <span class="input-group-text" id="inputGroup-sizing-default">Email</span>
+                                <span class="input-group-text" id="inputGroup-sizing-default2">Email</span>
                             </div>
-                            <input type="text" class="form-control" aria-label="email" aria-describedby="inputGroup-sizing-default">
+                            <input type="text" class="form-control" aria-label="email" aria-describedby="inputGroup-sizing-default" readonly>
+                        </div>
+
+                        <div class="input-group mb-3">
+                            <div class="input-group-prepend">
+                                <span class="input-group-text" id="inputGroup-sizing-default5">Password</span>
+                            </div>
+                            <input type="text" class="form-control" aria-label="password" placeholder="Type in new password" aria-describedby="inputGroup-sizing-default" readonly>
                         </div>
                           
                         <div class="input-group mb-3">
                             <div class="input-group-prepend">
-                                <span class="input-group-text" id="inputGroup-sizing-default">Name</span>
+                                <span class="input-group-text" id="inputGroup-sizing-default3">Name</span>
                             </div>
-                            <input type="text" class="form-control" aria-label="name" aria-describedby="inputGroup-sizing-default">
+                            <input type="text" class="form-control" aria-label="name" aria-describedby="inputGroup-sizing-default" readonly>
                         </div>
                         <div class="input-group mb-3">
                             <div class="input-group-prepend">
-                                <span class="input-group-text" id="inputGroup-sizing-default">Watched by</span>
+                                <span class="input-group-text" id="inputGroup-sizing-default4">Watched by</span>
                             </div>
-                            <input type="text" class="form-control" aria-label="watching" aria-describedby="inputGroup-sizing-default">
+                            <input type="text" class="form-control" aria-label="watching" aria-describedby="inputGroup-sizing-default" readonly>
                         </div>
+                        <button type="button" class="btn btn-primary btn-sm" id="edit-profile">Edit Profile</button>
+                        <br></br>
                         <div class="card text-white bg-secondary mb-3" style="max-width: 18rem;">
                             <div class="card-header h3">Jobs Created: </div>
                         </div>
@@ -67,6 +90,8 @@
                     </div>
                 </div>
             </div>
+            <!-- UNHIDE THIS WHEN A USER IS CLICKED -->
+            <div id="others-profile" class = "hide"></div>
         </div>
         <div id="section-logged-out">
             <nav>
