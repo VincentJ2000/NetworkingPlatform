@@ -518,7 +518,7 @@ const navigateTab = () => {
   navigationLink.forEach((link) => {
     link.addEventListener('click', (event) => {
       event.preventDefault();
-      const targetTab = document.querySelector(event.target.dataset.target);
+      const targetTab = document.querySelector(event.target.getAttribute('href'));
       const targetLink = event.target.getAttribute('id');
       
       document.querySelector('.nav-item.nav-link.active').classList.remove('active');
@@ -533,15 +533,23 @@ const navigateTab = () => {
           link.setAttribute('aria-selected', false);
         }
       });
-
+      
       //call get my profile here
-      if(targetLink === "nav-profile-tab"){
+      if(targetLink === "profile"){
         const id = localStorage.getItem('userId');
         getProfile(id);
+      }else if(targetLink === "create-job"){
+        addJob();
       }
     });
   });
 }
+
+//MILESTONE 5
+//adding a job
+// const addJob = () => {
+
+// }
 
 
 //helper functions

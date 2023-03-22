@@ -18,20 +18,19 @@
         <div id="section-logged-in" class="hide">
             <nav>
                 <div class="nav nav-tabs" id="nav-tab" role="tablist">
-                    <a class="nav-item nav-link active" id="nav-home-tab" data-toggle="tab" data-target="#nav-home" role="tab" aria-controls="nav-home" aria-selected="true">Home</a>
-                    <a class="nav-item nav-link" id="nav-profile-tab" data-toggle="tab" data-target="#nav-profile" role="tab" aria-controls="nav-profile" aria-selected="false">Profile</a>
+                    <a class="nav-item nav-link active" id="home" data-toggle="tab" href="#nav-home" role="tab" aria-controls="nav-home" aria-selected="true">Home</a>
+                    <a class="nav-item nav-link" id="profile" data-toggle="tab" href="#nav-profile" role="tab" aria-controls="nav-profile" aria-selected="false">Profile</a>
+                    <a class="nav-item nav-link" id="create-job" data-toggle="tab" href="#nav-job" role="tab" aria-controls="nav-job" aria-selected="false">Create Job</a>
                 </div>
             </nav>
             <div class="tab-content" id="nav-tabContent">
-                <div class="tab-pane fade show active" id="nav-home" role="tabpanel" aria-labelledby="nav-home-tab">
-                    </br>
-                    <button id="create-job-fake">Create Fake Job</button>
+                <div class="tab-pane fade show active" id="nav-home" role="tabpanel" aria-labelledby="home">
                     </br>
                     <div id="feed-items"></div>
                     Woo hoo! logged in :)
                     <button id="logout">Logout</button>
                 </div>
-                <div class="tab-pane fade" id="nav-profile" role="tabpanel" aria-labelledby="nav-profile-tab">
+                <div class="tab-pane fade" id="nav-profile" role="tabpanel" aria-labelledby="profile">
                     <div id="my-profile">
                     </br>
                         <div class="card" style="width: 18rem;">
@@ -88,6 +87,32 @@
                         </div>
                         <div id="job-list"></div>
                     </div>
+                </div>
+                <div class="tab-pane fade" id="nav-job" role="tabpanel" aria-labelledby="create-job">
+                    <form id="create-job-form">
+                        <div class="form-row">
+                            <div class="form-group col-md-6">
+                                <label for="inputTitle"">Title</label>
+                                <input type="text" class="form-control" id="inputTitle" placeholder="title">
+                            </div>
+                            <div class="form-group col-md-6">
+                                <label for="inputStart">Start Date</label>
+                                <input type="date" class="form-control" id="inputStart" placeholder="Start Date">
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label for="inputDescription">Description</label>
+                            <input type="text" class="form-control" id="inputDescription" placeholder="Job Description">
+                        </div>
+                        <label for="job-image-form">Job Image</label>
+                        <div class="custom-file custom-file-bordered" id="job-image-form">
+                            <input type="file" class="custom-file-input" id="validatedCustomFile" required>
+                            <label class="custom-file-label" for="validatedCustomFile">Choose file...</label>
+                            <div class="invalid-feedback">Example invalid custom file feedback</div>
+                        </div>
+                        <br></br>
+                        <button type="submit" class="btn btn-primary">Create Job</button>
+                    </form>
                 </div>
             </div>
             <!-- UNHIDE THIS WHEN A USER IS CLICKED -->

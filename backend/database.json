@@ -1,20 +1,26 @@
 {
   "users": {
-    "22800": {
+    "12314": {
+      "email": "betty@email.com",
+      "name": "Betty",
+      "password": "cardigan",
+      "watcheeUserIds": {}
+    },
+    "23562": {
       "email": "james@email.com",
       "name": "James",
       "password": "betty",
       "watcheeUserIds": {
-        "37672": true,
-        "74869": true
+        "12314": true,
+        "71841": true
       }
     },
-    "37672": {
+    "71841": {
       "email": "augustine@email.com",
       "name": "Augustine",
       "password": "august",
       "watcheeUserIds": {
-        "74869": true
+        "12314": true
       }
     },
     "44782": {
@@ -45,27 +51,16 @@
     }
   },
   "posts": {
-    "532829": {
-      "id": "532829",
-      "creatorId": 74869,
+    "182663": {
+      "id": "182663",
+      "creatorId": 12314,
       "image": "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAUAAAAFCAYAAACNbyblAAAAHElEQVQI12P4//8/w38GIAXDIBKE0DHxgljNBAAO9TXL0Y4OHwAAAABJRU5ErkJggg==",
       "title": "Hello Kitty Director",
       "start": "2011-10-05T14:48:00.000Z",
       "description": "Dedicated technical wizard with a passion and interest in human relationships",
-      "createdAt": "2023-03-20T05:00:51.449Z",
+      "createdAt": "2023-03-22T08:39:02.747Z",
       "likes": {},
-      "comments": [
-        {
-          "userId": 74869,
-          "userEmail": "betty@email.com",
-          "userName": "Betty",
-          "comment": "This is a great opportunity, my email is hello@unsw.edu.au"
-        },
-        {
-          "userId": 37672,
-          "comment": "New comment by August."
-        }
-      ]
+      "comments": []
     }
   },
   "nextMessageId": 1
