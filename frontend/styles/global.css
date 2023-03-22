@@ -30,9 +30,3 @@ html, body {
     justify-content: space-between;
     gap: 30px;
 }
-
-.custom-file-bordered {
-    border: 1px solid #ced4da;
-    padding: 0.375rem 0.75rem;
-    border-radius: 0.25rem;
-}
