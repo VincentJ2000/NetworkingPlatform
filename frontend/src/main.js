@@ -165,13 +165,6 @@ const populateFeed = () => {
             likeBtn.setAttribute("class", "btn btn-primary");
             likeBtn.setAttribute("id", "likeBtn");
             likeBtn.textContent = "Like";
-            feedItem.likes.forEach((item) => {
-              if (item.userId === parseInt(localStorage.getItem('userId'))) {
-                likeBtn.textContent = "Unlike";
-                likeBtn.setAttribute("class", "btn btn-secondary")
-              }
-            })
-
             likeBtn.addEventListener("click", () => {
               let likeState = true;
 
@@ -180,7 +173,6 @@ const populateFeed = () => {
                 likeBtn.textContent = "Like";
                 likeBtn.setAttribute("class", "btn btn-primary");
               } else {
-                likeState = true;
                 likeBtn.textContent = "Unlike";
                 likeBtn.setAttribute("class", "btn btn-secondary")
               }
@@ -446,7 +438,7 @@ const getProfile = (id) => {
       inputId.value = data.id;
       inputEmail.value = data.email;
       inputName.value = data.name;
-      inputWatching.value = "";
+      inputWatching.value = `Watched by: `;
     
       if (data.watcheeUserIds.length === 1){
         getUserData(data.watcheeUserIds[0]).then((data) => {
@@ -518,7 +510,7 @@ const navigateTab = () => {
   navigationLink.forEach((link) => {
     link.addEventListener('click', (event) => {
       event.preventDefault();
-      const targetTab = document.querySelector(event.target.getAttribute('href'));
+      const targetTab = document.querySelector(event.target.dataset.target);
       const targetLink = event.target.getAttribute('id');
       
       document.querySelector('.nav-item.nav-link.active').classList.remove('active');
@@ -533,23 +525,15 @@ const navigateTab = () => {
           link.setAttribute('aria-selected', false);
         }
       });
-      
+
       //call get my profile here
-      if(targetLink === "profile"){
+      if(targetLink === "nav-profile-tab"){
         const id = localStorage.getItem('userId');
         getProfile(id);
-      }else if(targetLink === "create-job"){
-        addJob();
       }
     });
   });
 }
-
-//MILESTONE 5
-//adding a job
-// const addJob = () => {
-
-// }
 
 
 //helper functions
@@ -617,4 +601,3 @@ if (localStorage.getItem('token')) {
     navigateTab();
     updateProfile();
 }
-  
