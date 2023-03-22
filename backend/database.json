@@ -54,7 +54,14 @@
       "description": "Dedicated technical wizard with a passion and interest in human relationships",
       "createdAt": "2023-03-20T05:00:51.449Z",
       "likes": {},
-      "comments": []
+      "comments": [
+        {
+          "userId": 74869,
+          "userEmail": "betty@email.com",
+          "userName": "Betty",
+          "comment": "This is a great opportunity, my email is hello@unsw.edu.au"
+        }
+      ]
     }
   },
   "nextMessageId": 1

@@ -14,11 +14,12 @@ html, body {
     cursor: pointer;
 }
 
-.modal-header {
+/* .modal-header {
     background-color: lightcoral;
-}
+} */
 
 .flex-container {
     display: flex;
     justify-content: space-between;
+    gap: 30px;
 }

@@ -121,28 +121,59 @@ const populateFeed = () => {
               cardText3.textContent = "Creator: " + data.name;
             })
 
-            const likesContainer = document.createElement("div");
-            likesContainer.setAttribute("class", "flex-container");
-            const likesInfo = document.createElement("div");
-            likesInfo.setAttribute("class", "flex-item");
-            likesInfo.textContent = likesList(feedItem.likes);
-            likesContainer.appendChild(likesInfo);
+            const bottomContainer = document.createElement("div");
+            bottomContainer.setAttribute("class", "flex-container");
 
-            const likeButton = document.createElement("button");
-            likeButton.setAttribute("class", "flex-item");
-            likeButton.setAttribute("class", "btn btn-primary");
-            likeButton.setAttribute("id", "likeButton");
-            likeButton.textContent = "Like";
-            likeButton.addEventListener("click", () => {
+            const likesCommentsSection = document.createElement("div");
+            likesCommentsSection.setAttribute("class", "flex-container");
+            bottomContainer.appendChild(likesCommentsSection);
+
+            const likesContainer = document.createElement("a");
+            likesContainer.setAttribute("href", "");
+            likesContainer.setAttribute("class", "flex-item");
+            likesContainer.setAttribute("data-bs-toggle", "modal");
+            likesContainer.setAttribute("data-bs-target", "#likesModal");
+            likesContainer.textContent = "Likes: " + feedItem.likes.length;
+            likesCommentsSection.appendChild(likesContainer);
+            likesCommentsSection.appendChild(createModalDOM("likesModal", "Liked by", feedItem.likes));
+
+            const commentsContainer = document.createElement("a");
+            commentsContainer.setAttribute("href", "");
+            commentsContainer.setAttribute("class", "flex-item");
+            commentsContainer.setAttribute("data-bs-toggle", "modal");
+            commentsContainer.setAttribute("data-bs-target", "#commentsModal");
+            commentsContainer.textContent = "Comments: " + feedItem.comments.length;
+            likesCommentsSection.appendChild(commentsContainer);
+            likesCommentsSection.appendChild(createModalDOM("commentsModal", "Comments", feedItem.comments));
+            
+            // const likesContainer = document.createElement("div");
+            // likesContainer.setAttribute("class", "flex-container");
+            // const likesInfo = document.createElement("div");
+            // likesInfo.setAttribute("class", "flex-item");
+            // likesInfo.textContent = likesList(feedItem.likes);
+            // likesContainer.appendChild(likesInfo);
+
+            // Like and Comment buttons
+            const btnContainer = document.createElement("div");
+            btnContainer.setAttribute("class", "flex-container");
+            bottomContainer.appendChild(btnContainer);
+
+            // Like button
+            const likeBtn = document.createElement("button");
+            likeBtn.setAttribute("class", "flex-item");
+            likeBtn.setAttribute("class", "btn btn-primary");
+            likeBtn.setAttribute("id", "likeBtn");
+            likeBtn.textContent = "Like";
+            likeBtn.addEventListener("click", () => {
               let likeState = true;
 
-              if (likeButton.textContent === "Unlike") {
+              if (likeBtn.textContent === "Unlike") {
                 likeState = false;
-                likeButton.textContent = "Like";
-                likeButton.setAttribute("class", "btn btn-primary");
+                likeBtn.textContent = "Like";
+                likeBtn.setAttribute("class", "btn btn-primary");
               } else {
-                likeButton.textContent = "Unlike";
-                likeButton.setAttribute("class", "btn btn-secondary")
+                likeBtn.textContent = "Unlike";
+                likeBtn.setAttribute("class", "btn btn-secondary")
               }
 
               const payload = {
@@ -151,15 +182,32 @@ const populateFeed = () => {
               }
               apiCall('job/like', 'PUT', {}, payload);
             })
+            btnContainer.appendChild(likeBtn);
 
-            likesContainer.appendChild(likeButton);
+            // Comment button
+            const commentBtn = document.createElement("button");
+            commentBtn.setAttribute("class", "flex-item");
+            commentBtn.setAttribute("class", "btn btn-primary");
+            commentBtn.setAttribute("id", "commentBtn");
+            commentBtn.textContent = "Comment";
+            commentBtn.addEventListener("click", () => {
+              const payload = {
+                id: feedItem.id,
+                comment: ""
+              }
 
-            const commentsContainer = document.createElement("div");
-            commentsContainer.textContent = "Comments: " + feedItem.comments.length;
-            for (comment of feedItem.comments) {
-              const commentDOM = createCommentChild(comment);
-              commentsContainer.appendChild(commentDOM);
-            }
+              console.log("create comment");
+              // apiCall('job/comment', 'POST', {}, payload);
+            })
+            btnContainer.appendChild(commentBtn);
+            console.log(bottomContainer);
+
+            // const commentsContainer = document.createElement("div");
+            // commentsContainer.textContent = "Comments: " + feedItem.comments.length;
+            // for (comment of feedItem.comments) {
+            //   const commentDOM = createCommentChild(comment);
+            //   commentsContainer.appendChild(commentDOM);
+            // }
 
             const cardText2 = document.createElement("p");
             cardText2.classList.add("card-text");
@@ -173,8 +221,7 @@ const populateFeed = () => {
             cardBody.appendChild(cardText4);
             cardBody.appendChild(cardText1);
             cardBody.appendChild(cardText3);
-            cardBody.appendChild(likesContainer);
-            cardBody.appendChild(commentsContainer);
+            cardBody.appendChild(bottomContainer);
             cardBody.appendChild(cardText2);
             card.appendChild(cardImage);
             card.appendChild(cardBody);
@@ -194,24 +241,71 @@ const getUserData = (id) => {
   });
 }
 
-// get list of Likes
-const likesList = (arr) => {
-  let list = "Liked by: ";
-  for (user of arr) {
-    list = list + user.userName + ", "
+// Create Modal DOM
+const createModalDOM = (id, title, body) => {
+  const modalContainer = document.createElement("div");
+  modalContainer.setAttribute("class", "modal fade");
+  modalContainer.setAttribute("id", id);
+  modalContainer.setAttribute("tabindex", "-1");
+  modalContainer.setAttribute("role", "dialog");
+  modalContainer.setAttribute("aria-labelledby", `${id}Title`);
+  modalContainer.setAttribute("aria-hidden", "true");
+
+  const modalDialog = document.createElement("div");
+  modalDialog.setAttribute("class", "modal-dialog");
+  modalDialog.setAttribute("role", "document");
+  modalContainer.appendChild(modalDialog);
+
+  const modalContent = document.createElement("div");
+  modalContent.setAttribute("class", "modal-content");
+  modalDialog.appendChild(modalContent);
+
+  const modalHeader = document.createElement("div");
+  modalHeader.setAttribute("class", "modal-header");
+  modalContent.appendChild(modalHeader);
+
+  const modalTitle = document.createElement("h4");
+  modalTitle.setAttribute("class", "modal-title");
+  modalTitle.setAttribute("id", `${id}Title`);
+  modalTitle.textContent = title;
+  modalHeader.appendChild(modalTitle);
+
+  const closeBtn = document.createElement("button");
+  closeBtn.setAttribute("type", "button");
+  closeBtn.setAttribute("class", "close");
+  closeBtn.setAttribute("data-bs-dismiss", "modal");
+  closeBtn.setAttribute("aria-label", "Close");
+  const span = document.createElement("span");
+  span.setAttribute("aria-hidden", "true");
+  span.textContent = "x";
+  closeBtn.appendChild(span);
+  modalHeader.appendChild(closeBtn);
+
+  const modalBody = document.createElement("div");
+  modalBody.setAttribute("class", "modal-body");
+  modalContent.appendChild(modalBody);
+
+  if (id === "likesModal") {
+    for (const item of body) {
+      const likeChild = document.createElement("div");
+      likeChild.textContent = item.userName;
+      modalBody.appendChild(likeChild);
+    }
+  } else if (id === "commentsModal") {
+    for (const item of body) {
+      const commentChild = createCommentChild(item);
+      modalBody.appendChild(commentChild);
+    }
   }
   
-  return list.slice(0, -1)
+  return modalContainer;
 }
 
 const createCommentChild = (comment) => {
   const individualComment = document.createElement("div");
-  individualComment.setAttribute("class", "card card-body");
   const commentTitle = document.createElement("h5");
-  commentTitle.setAttribute("class", "card-title");
   commentTitle.textContent = comment.userName;
   const commentInfo = document.createElement("p");
-  commentInfo.setAttribute("class", "card-text");
   commentInfo.textContent = comment.comment;
   individualComment.appendChild(commentTitle);
   individualComment.appendChild(commentInfo);
