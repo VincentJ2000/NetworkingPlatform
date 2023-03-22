@@ -10,22 +10,24 @@ const apiCall = (path, method, body, arg) => {
           'Content-type': 'application/json',
         },
       };
+
       if (method === 'GET') {
         // Come back to this
         path = path + arg;
       } else {
-        console.log(body);
         options.body = JSON.stringify(body);
       }
+
       if (localStorage.getItem('token')) {
         options.headers.Authorization = `Bearer ${localStorage.getItem('token')}`;
       }
+
       fetch('http://localhost:5005/' + path, options)
         .then((response) => response.json())
         .then((data) => {
           if (data.error) {
             showErrorModal(data.error);
-            alert(data.error);
+            // alert(data.error);
           } else {
             resolve(data);
           }
@@ -36,36 +38,43 @@ const apiCall = (path, method, body, arg) => {
 
 //register function
 document.getElementById('register-button').addEventListener('click', () => {
+    const email = document.getElementById('user-email').value;
+    const name = document.getElementById('user-name').value;
     const password =  document.getElementById('user-password').value;
     const confirmPassword = document.getElementById('user-password-confirmation').value;
-    if (password !== confirmPassword) {
-      // showErrorModal("Confirm password doest not match.");
-      alert("Confirm password doest not match.");
-    } else {
-      const payload = {
-          email: document.getElementById('user-email').value,
-          password: document.getElementById('user-password').value,
-          name: document.getElementById('user-name').value,
-      }
 
-      apiCall('auth/register', 'POST', payload)
-          .then((data) => {
-            setToken(data.token, data.userId);
-          });
+    if (email === "" || name === "" || password === ""  || confirmPassword === "" ) {
+      showErrorModal("Please fill in all the details.");
+    } else {
+      if (password !== confirmPassword) {
+        showErrorModal("Confirm password doest not match.");
+        // alert("Confirm password doest not match.");
+      } else {
+        const payload = {
+            email: email,
+            password: password,
+            name: name,
+        }
+  
+        apiCall('auth/register', 'POST', payload)
+            .then((data) => {
+              setToken(data.token, data.userId);
+            });
+      }
     }
 });
 
 const showErrorModal = (errorMessage) => {
   document.getElementById('modal-backdrop').style.display = 'block';
-  document.getElementById('modal-container').style.display = 'block';
-  document.getElementById('modal-container').classList.add('show');
-  document.getElementById('modal-text').innerText = errorMessage;
+  document.getElementById('alert-modal').style.display = 'block';
+  document.getElementById('alert-modal').classList.add('show');
+  document.getElementById('alert-text').textContent = errorMessage;
 }
 
 document.getElementById('close-modal').addEventListener('click', () => {
     document.getElementById('modal-backdrop').style.display = 'none';
-    document.getElementById('modal-container').style.display = 'none';
-    document.getElementById('modal-container').classList.remove('show');
+    document.getElementById('alert-modal').style.display = 'none';
+    document.getElementById('alert-modal').classList.remove('show');
 });
   
 //login function
@@ -174,7 +183,7 @@ const populateFeed = () => {
                 id: feedItem.id,
                 turnon: likeState
               }
-              apiCall('job/like', 'PUT', {}, payload);
+              apiCall('job/like', 'PUT', payload);
             })
             btnContainer.appendChild(likeBtn);
 
@@ -184,17 +193,10 @@ const populateFeed = () => {
             commentBtn.setAttribute("class", "btn btn-primary");
             commentBtn.setAttribute("id", "commentBtn");
             commentBtn.textContent = "Comment";
-            commentBtn.addEventListener("click", () => {
-              const payload = {
-                id: feedItem.id,
-                comment: ""
-              }
-
-              console.log("create comment");
-              // apiCall('job/comment', 'POST', {}, payload);
-            })
+            commentBtn.setAttribute("data-bs-toggle", "modal");
+            commentBtn.setAttribute("data-bs-target", "#commentForm");
             btnContainer.appendChild(commentBtn);
-            console.log(bottomContainer);
+            btnContainer.appendChild(createModalDOM("commentForm", `New comment for ${feedItem.title} job post.`, feedItem.id))
 
             const cardText2 = document.createElement("p");
             cardText2.classList.add("card-text");
@@ -259,13 +261,9 @@ const createModalDOM = (id, title, body) => {
 
   const closeBtn = document.createElement("button");
   closeBtn.setAttribute("type", "button");
-  closeBtn.setAttribute("class", "close");
+  closeBtn.setAttribute("class", "btn-close");
   closeBtn.setAttribute("data-bs-dismiss", "modal");
   closeBtn.setAttribute("aria-label", "Close");
-  const span = document.createElement("span");
-  span.setAttribute("aria-hidden", "true");
-  span.textContent = "x";
-  closeBtn.appendChild(span);
   modalHeader.appendChild(closeBtn);
 
   const modalBody = document.createElement("div");
@@ -283,6 +281,42 @@ const createModalDOM = (id, title, body) => {
       const commentChild = createCommentChild(item);
       modalBody.appendChild(commentChild);
     }
+  } else if (id === "commentForm") {
+    const commentForm = document.createElement("form");
+    const formContent = document.createElement("div");
+    formContent.setAttribute("class", "mb-3");
+    
+    const formLabel = document.createElement("label");
+    formLabel.setAttribute("for", "comment-text");
+    formLabel.setAttribute("class", "col-form-label");
+    formLabel.textContent = "Comment:";
+    formContent.appendChild(formLabel);
+    const textArea = document.createElement("textarea");
+    textArea.setAttribute("id", "comment-text");
+    textArea.setAttribute("class", "form-control");
+    formContent.appendChild(textArea);
+
+    commentForm.appendChild(formContent);
+    modalBody.appendChild(commentForm);
+
+    const modalFooter = document.createElement("div");
+    modalFooter.setAttribute("class", "modal-footer");
+    const sendBtn = document.createElement("button");
+    sendBtn.setAttribute("type", "button");
+    sendBtn.setAttribute("class", "btn btn-primary");
+    sendBtn.setAttribute("data-bs-dismiss", "modal");
+    sendBtn.textContent = "Post comment";
+    sendBtn.addEventListener("click", () => {
+      const payload = {
+        id: body,
+        comment: textArea.value
+      }
+
+      apiCall('job/comment', 'POST', payload);
+    })
+
+    modalFooter.appendChild(sendBtn);
+    modalContent.appendChild(modalFooter);
   }
   
   return modalContainer;

@@ -42,6 +42,12 @@
       "name": "sheina",
       "password": "123",
       "watcheeUserIds": {}
+    },
+    "97717": {
+      "email": "",
+      "name": "",
+      "password": "",
+      "watcheeUserIds": {}
     }
   },
   "posts": {
@@ -60,6 +66,10 @@
           "userEmail": "betty@email.com",
           "userName": "Betty",
           "comment": "This is a great opportunity, my email is hello@unsw.edu.au"
+        },
+        {
+          "userId": "37672",
+          "comment": "New comment by August."
         }
       ]
     }

@@ -14,9 +14,16 @@ html, body {
     cursor: pointer;
 }
 
-/* .modal-header {
-    background-color: lightcoral;
-} */
+#alert-message {
+    display: flex;
+    justify-content: space-between;
+    background-color: #f8d7d9;
+    border-radius: 5px;
+}
+
+.modal-header {
+    background-color: skyblue;
+}
 
 .flex-container {
     display: flex;
