@@ -446,7 +446,7 @@ const getProfile = (id) => {
       inputId.value = data.id;
       inputEmail.value = data.email;
       inputName.value = data.name;
-      inputWatching.value = `Watched by: `;
+      inputWatching.value = "";
     
       if (data.watcheeUserIds.length === 1){
         getUserData(data.watcheeUserIds[0]).then((data) => {
