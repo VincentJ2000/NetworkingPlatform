@@ -180,7 +180,7 @@ const populateFeed = () => {
               }
 
               const payload = {
-                id: feedItem.id,
+                id: parseInt(feedItem.id),
                 turnon: likeState
               }
               apiCall('job/like', 'PUT', payload);
@@ -196,7 +196,7 @@ const populateFeed = () => {
             commentBtn.setAttribute("data-bs-toggle", "modal");
             commentBtn.setAttribute("data-bs-target", "#commentForm");
             btnContainer.appendChild(commentBtn);
-            btnContainer.appendChild(createModalDOM("commentForm", `New comment for ${feedItem.title} job post.`, feedItem.id))
+            btnContainer.appendChild(createModalDOM("commentForm", `New comment for ${feedItem.title} job post.`, parseInt(feedItem.id)))
 
             const cardText2 = document.createElement("p");
             cardText2.classList.add("card-text");
