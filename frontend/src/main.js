@@ -124,6 +124,7 @@ const populateFeed = () => {
             const bottomContainer = document.createElement("div");
             bottomContainer.setAttribute("class", "flex-container");
 
+            // Likes and Comments Section
             const likesCommentsSection = document.createElement("div");
             likesCommentsSection.setAttribute("class", "flex-container");
             bottomContainer.appendChild(likesCommentsSection);
@@ -145,13 +146,6 @@ const populateFeed = () => {
             commentsContainer.textContent = "Comments: " + feedItem.comments.length;
             likesCommentsSection.appendChild(commentsContainer);
             likesCommentsSection.appendChild(createModalDOM("commentsModal", "Comments", feedItem.comments));
-            
-            // const likesContainer = document.createElement("div");
-            // likesContainer.setAttribute("class", "flex-container");
-            // const likesInfo = document.createElement("div");
-            // likesInfo.setAttribute("class", "flex-item");
-            // likesInfo.textContent = likesList(feedItem.likes);
-            // likesContainer.appendChild(likesInfo);
 
             // Like and Comment buttons
             const btnContainer = document.createElement("div");
@@ -201,13 +195,6 @@ const populateFeed = () => {
             })
             btnContainer.appendChild(commentBtn);
             console.log(bottomContainer);
-
-            // const commentsContainer = document.createElement("div");
-            // commentsContainer.textContent = "Comments: " + feedItem.comments.length;
-            // for (comment of feedItem.comments) {
-            //   const commentDOM = createCommentChild(comment);
-            //   commentsContainer.appendChild(commentDOM);
-            // }
 
             const cardText2 = document.createElement("p");
             cardText2.classList.add("card-text");
