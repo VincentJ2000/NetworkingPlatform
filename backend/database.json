@@ -1,66 +1,49 @@
 {
   "users": {
-    "12314": {
+    "65687": {
       "email": "betty@email.com",
       "name": "Betty",
       "password": "cardigan",
       "watcheeUserIds": {}
     },
-    "23562": {
-      "email": "james@email.com",
-      "name": "James",
-      "password": "betty",
-      "watcheeUserIds": {
-        "12314": true,
-        "71841": true
-      }
-    },
-    "71841": {
+    "95112": {
       "email": "augustine@email.com",
       "name": "Augustine",
       "password": "august",
       "watcheeUserIds": {
-        "12314": true
+        "65687": true
       }
     },
-    "44782": {
-      "email": "vin@123.com",
-      "name": "vinvin",
-      "password": "123",
-      "watcheeUserIds": {}
-    },
-    "74869": {
-      "email": "betty@email.com",
-      "name": "Betty",
-      "password": "cardigan",
+    "97467": {
+      "email": "james@email.com",
+      "name": "James",
+      "password": "betty",
       "watcheeUserIds": {
-        "37672": true
+        "65687": true,
+        "95112": true
       }
-    },
-    "80809": {
-      "email": "vincent@unsw.edu.au",
-      "name": "vincent",
-      "password": "helloworld",
-      "watcheeUserIds": {}
-    },
-    "93602": {
-      "email": "sheina@hello.com",
-      "name": "sheina",
-      "password": "123",
-      "watcheeUserIds": {}
     }
   },
   "posts": {
-    "182663": {
-      "id": "182663",
-      "creatorId": 12314,
+    "865058": {
+      "id": "865058",
+      "creatorId": 97467,
       "image": "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAUAAAAFCAYAAACNbyblAAAAHElEQVQI12P4//8/w38GIAXDIBKE0DHxgljNBAAO9TXL0Y4OHwAAAABJRU5ErkJggg==",
       "title": "Hello Kitty Director",
       "start": "2011-10-05T14:48:00.000Z",
       "description": "Dedicated technical wizard with a passion and interest in human relationships",
-      "createdAt": "2023-03-22T08:39:02.747Z",
+      "createdAt": "2022-03-06T01:30:15.850Z",
       "likes": {},
-      "comments": []
+      "comments": [
+        {
+          "userId": "65687",
+          "comment": "Hello there"
+        },
+        {
+          "userId": "95112",
+          "comment": "Hello there2"
+        }
+      ]
     }
   },
   "nextMessageId": 1
