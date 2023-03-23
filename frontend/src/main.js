@@ -128,6 +128,9 @@ const populateFeed = () => {
               cardText3.textContent = "Creator: "
               const creatorName = createLinkName(data.name,"others-profile","my-screen");
               cardText3.appendChild(creatorName);
+              let jobNames = JSON.parse(localStorage.getItem('job-names'));
+              jobNames.push({ name: data.name, id: feedItem.creatorId });
+              localStorage.setItem('job-names', JSON.stringify(jobNames));
             })
 
             const bottomContainer = document.createElement("div");
@@ -281,9 +284,13 @@ const createModalDOM = (id, title, body) => {
   if (id === "likesModal") {
     for (const item of body) {
       const likesName = createLinkName(item.userName,"others-profile","my-screen");
-      // const likeChild = document.createElement("div");
+      const likeChild = document.createElement("div");
+      likeChild.appendChild(likesName);
       // likeChild.textContent = likesName;
-      modalBody.appendChild(likesName);
+      modalBody.appendChild(likeChild);
+      let likesNames = JSON.parse(localStorage.getItem('likes-names'));
+      likesNames.push({ name: item.userName, id: item.userId});
+      localStorage.setItem('likes-names', JSON.stringify(likesNames));
     }
 
   } else if (id === "commentsModal") {
@@ -333,6 +340,9 @@ const createModalDOM = (id, title, body) => {
 }
 
 const createCommentChild = (comment) => {
+  let commentsNames = JSON.parse(localStorage.getItem('comments-names'));
+  commentsNames.push({ name: comment.userName, id: comment.userId});
+  localStorage.setItem('comments-names', JSON.stringify(commentsNames));
 
   const individualComment = document.createElement("div");
   // const commentTitle = document.createElement("h5");
@@ -406,15 +416,15 @@ const updateProfile = () => {
 }
 
 //get profile for a user
-const getProfile = (id) => {
+const getProfile = (id, myProfile, inputIdArg, inputEmailArg, inputNameArg, inputWatchingArg, inputWatchingProfileArg, profilePictureArg, jobListArg) => {
   getUserData(id)
   .then((data) => {
-      const inputId = document.querySelector('input[aria-label="id"]');
-      const inputEmail = document.querySelector('input[aria-label="email"]');
-      const inputName = document.querySelector('input[aria-label="name"]');
-      const inputWatching = document.querySelector('input[aria-label="watching"]');
-      const inputWatchingProfile = document.getElementById('profile-watched-by');
-      const profilePicture = document.getElementById("my-profile-picture");
+      const inputId = document.querySelector(inputIdArg);
+      const inputEmail = document.querySelector(inputEmailArg);
+      const inputName = document.querySelector(inputNameArg);
+      const inputWatching = document.querySelector(inputWatchingArg);
+      const inputWatchingProfile = document.getElementById(inputWatchingProfileArg);
+      const profilePicture = document.getElementById(profilePictureArg);
 
       inputId.value = '';
       inputEmail.value = '';
@@ -428,26 +438,28 @@ const getProfile = (id) => {
         profilePicture.src = '../asset/default.jpeg';
       }
 
-      const fileInput = document.getElementById("profile-picture-file");
-      fileInput.addEventListener("change", () => {
-        let payload = {
-          "email": undefined,
-          "password": undefined,
-          "name": undefined
-        };
-        const file = fileInput.files[0];
-        fileToDataUrl(file).then((data) => {
-          payload["image"] = data;
-          console.log(payload);
-          apiCall('user', 'PUT', payload)
-          .then((data) => {
-            if(data.error){ 
-              alert(data.error);
-            }
+      if(myProfile == true){
+        const fileInput = document.getElementById("profile-picture-file");
+        fileInput.addEventListener("change", () => {
+          let payload = {
+            "email": undefined,
+            "password": undefined,
+            "name": undefined
+          };
+          const file = fileInput.files[0];
+          fileToDataUrl(file).then((data) => {
+            payload["image"] = data;
+            console.log(payload);
+            apiCall('user', 'PUT', payload)
+            .then((data) => {
+              if(data.error){ 
+                alert(data.error);
+              }
+            })
+            profilePicture.src = data;
           })
-          profilePicture.src = data;
         })
-      })
+      }
       
       inputWatchingProfile.textContent = data.watcheeUserIds.length;
       inputId.value = data.id;
@@ -471,7 +483,7 @@ const getProfile = (id) => {
       }
       
       const jobs = data.jobs;
-      document.getElementById('job-list').textContent = '';
+      document.getElementById(jobListArg).textContent = '';
       for (const jobItem of jobs) {
 
           const card = document.createElement("div");
@@ -513,7 +525,7 @@ const getProfile = (id) => {
           cardBody.appendChild(cardText2);
           card.appendChild(cardImage);
           card.appendChild(cardBody);
-          document.getElementById('job-list').appendChild(card);
+          document.getElementById(jobListArg).appendChild(card);
       }
   });
 }
@@ -542,7 +554,7 @@ const navigateTab = () => {
       //call get my profile here
       if(targetLink === "profile"){
         const id = localStorage.getItem('userId');
-        getProfile(id);
+        getProfile(id,true, 'input[aria-label="id"]','input[aria-label="email"]','input[aria-label="name"]','input[aria-label="watching"]','profile-watched-by',"my-profile-picture", "job-list");
       }else if(targetLink === "create-job"){
         // addJob();
       }
@@ -567,6 +579,9 @@ const hide = (element) => {
 const setToken = (token, id) => {
     localStorage.setItem('token', token);
     localStorage.setItem('userId', id);
+    localStorage.setItem('job-names', JSON.stringify([]));
+    localStorage.setItem('likes-names', JSON.stringify([]));
+    localStorage.setItem('comments-names', JSON.stringify([]));
     show('section-logged-in');
     hide('section-logged-out');
     populateFeed();
@@ -604,10 +619,49 @@ const createLinkName = (name,showScreen,hideScreen) => {
   const creatorLink = document.createElement("a");
   creatorLink.href = "#";
   creatorLink.textContent = name;
-  
-  creatorLink.onclick = () => {
+  const jobNames = JSON.parse(localStorage.getItem('job-names'));
+  const likesNames = JSON.parse(localStorage.getItem('likes-names'));
+  const commentsNames = JSON.parse(localStorage.getItem('comments-names'));
+  const user = JSON.parse(localStorage.getItem('userId'));
+  //get the id of the other user stored in a list in local storage
+  creatorLink.onclick = (event) => {
+    const otherUser = event.target.textContent;
+    console.log(event.target.textContent)
+    let chosenUser;
+
+    for (let i = 0; i < jobNames.length; i++) {
+      if (jobNames[i].name === otherUser) {
+        chosenUser = jobNames[i].id;
+        break;
+      }
+    }
+    if(!chosenUser){
+      for (let i = 0; i < likesNames.length; i++) {
+        if (likesNames[i].name === otherUser) {
+          chosenUser = likesNames[i].id;
+          break;
+        }
+      }
+    }
+    if(!chosenUser){
+      for (let i = 0; i < commentsNames.length; i++) {
+        if (commentsNames[i].name === otherUser) {
+          chosenUser = commentsNames[i].id;
+          break;
+        }
+      }
+    }
+    // console.log(chosenUser);
+    // console.log(user);
+    // if(chosenUser === user){
+    //   // show(showScreen);
+    //   // hide(hideScreen);
+    // }else{
+    getProfile(chosenUser,false,'input[aria-label="other-id"]','input[aria-label="other-email"]','input[aria-label="other-name"]','input[aria-label="other-watching"]','other-profile-watched-by',"other-profile-picture", "other-job-list");
     show(showScreen);
     hide(hideScreen);
+    // }
+    
   };
   creatorLink.setAttribute("data-bs-dismiss","modal");
   return creatorLink;
@@ -630,6 +684,9 @@ document.getElementById('logout').addEventListener('click', () => {
     hide('section-logged-in');
     localStorage.removeItem('token');
     localStorage.removeItem('userId');
+    localStorage.removeItem('job-names');
+    localStorage.removeItem('likes-names');
+    localStorage.removeItem('comments-names');
 });
 
 //MAIN
