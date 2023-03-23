@@ -96,25 +96,28 @@
                             <div class="form-row">
                                 <div class="form-group col-md-6">
                                     <label for="inputTitle"">Title</label>
-                                    <input type="text" class="form-control" id="inputTitle" placeholder="title">
+                                    <input type="text" class="form-control" id="inputTitle" placeholder="title" required>
+                                    <div class="invalid-feedback">Include a title</div>
                                 </div>
                                 <div class="form-group col-md-6">
                                     <label for="inputStart">Start Date</label>
-                                    <input type="date" class="form-control" id="inputStart" placeholder="Start Date">
+                                    <input type="date" class="form-control" id="inputStart" placeholder="Start Date" required>
+                                    <div class="invalid-feedback">Include a start date</div>
                                 </div>
                             </div>
                             <div class="form-group">
                                 <label for="inputDescription">Description</label>
-                                <input type="text" class="form-control" id="inputDescription" placeholder="Job Description">
+                                <input type="text" class="form-control" id="inputDescription" placeholder="Job Description" required>
+                                <div class="invalid-feedback">Include a job description</div>
                             </div>
                             <label for="job-image-form">Job Image</label>
                             <div class="custom-file custom-file-bordered" id="job-image-form">
                                 <input type="file" class="custom-file-input" id="validatedCustomFile" required>
-                                <label class="custom-file-label" for="validatedCustomFile">Choose file...</label>
-                                <div class="invalid-feedback">Example invalid custom file feedback</div>
+                                <!-- <label class="custom-file-label" for="validatedCustomFile">Choose file...</label> -->
+                                <div class="invalid-feedback">upload a picture to describe the job (jpeg, png, jpg)</div>
                             </div>
                             <br></br>
-                            <button type="submit" class="btn btn-primary">Create Job</button>
+                            <button type="button" id="create-job-button" class="btn btn-primary">Create Job</button>
                         </form>
                     </div>
                 </div>

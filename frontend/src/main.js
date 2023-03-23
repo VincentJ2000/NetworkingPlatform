@@ -470,7 +470,7 @@ const getProfile = (id, myProfile, inputIdArg, inputEmailArg, inputNameArg, inpu
       while (inputWatching.firstChild) {
         inputWatching.removeChild(inputWatching.firstChild);
       }
-
+      
       if (data.watcheeUserIds.length === 1){
         getUserData(data.watcheeUserIds[0]).then((data) => {
           const name = createLinkName(data.name,"others-profile","my-screen");
@@ -565,7 +565,7 @@ const navigateTab = () => {
         const id = localStorage.getItem('userId');
         getProfile(id,true, 'input[aria-label="id"]','input[aria-label="email"]','input[aria-label="name"]',"my-watch-by",'profile-watched-by',"my-profile-picture", "job-list");
       }else if(targetLink === "create-job"){
-        // addJob();
+        addJob();
       }
     });
   });
@@ -573,9 +573,37 @@ const navigateTab = () => {
 
 //MILESTONE 5
 //adding a job
-// const addJob = () => {
+const addJob = () => {
+  const submitButton = document.getElementById("create-job-button");
+  submitButton.addEventListener('click', () => {
+    const inputTitle = document.getElementById("inputTitle");
+    const inputStart = document.getElementById("inputStart");
+    const inputDescription = document.getElementById("inputDescription");
+    const inputImage = document.getElementById("validatedCustomFile");
 
-// }
+    const startDate = new Date(inputStart.value);
+    const startDateForm = startDate.toISOString();
+    console.log(startDateForm);
+    
+    if(inputImage.files[0]){
+      fileToDataUrl(inputImage.files[0]).then((data) => {
+        const payload = {
+          title: inputTitle.value,
+          image: data,
+          start: startDateForm,
+          description:inputDescription.value
+        }
+        console.log(payload);
+        apiCall('job', 'POST', payload)
+            .then((data) => {
+              if(data.error){
+                alert(data.error);
+              }
+            });
+      })
+    }
+  })
+}
 
 
 //helper functions
@@ -690,6 +718,7 @@ document.getElementById('nav-login').addEventListener('click', () => {
 
 //logged out section
 document.getElementById('logout').addEventListener('click', () => {
+    location.reload();
     show('section-logged-out');
     hide('section-logged-in');
     localStorage.removeItem('token');
