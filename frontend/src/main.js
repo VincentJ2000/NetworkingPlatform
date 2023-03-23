@@ -422,14 +422,14 @@ const getProfile = (id, myProfile, inputIdArg, inputEmailArg, inputNameArg, inpu
       const inputId = document.querySelector(inputIdArg);
       const inputEmail = document.querySelector(inputEmailArg);
       const inputName = document.querySelector(inputNameArg);
-      const inputWatching = document.querySelector(inputWatchingArg);
+      const inputWatching = document.getElementById(inputWatchingArg);
       const inputWatchingProfile = document.getElementById(inputWatchingProfileArg);
       const profilePicture = document.getElementById(profilePictureArg);
 
       inputId.value = '';
       inputEmail.value = '';
       inputName.value = '';
-      inputWatching.value = '';
+      // inputWatching.value = '';
       inputWatchingProfile.textContent = '';
       
       if(data.image){
@@ -465,19 +465,28 @@ const getProfile = (id, myProfile, inputIdArg, inputEmailArg, inputNameArg, inpu
       inputId.value = data.id;
       inputEmail.value = data.email;
       inputName.value = data.name;
-      inputWatching.value = "";
+      // inputWatching.value = "";
     
+      while (inputWatching.firstChild) {
+        inputWatching.removeChild(inputWatching.firstChild);
+      }
+
       if (data.watcheeUserIds.length === 1){
         getUserData(data.watcheeUserIds[0]).then((data) => {
-          inputWatching.value += data.name;
+          const name = createLinkName(data.name,"others-profile","my-screen");
+          const nameContainer = document.createElement("div");
+          nameContainer.appendChild(name);
+          inputWatching.appendChild(nameContainer);
+          // inputWatching.value += data.name;
         });
       }else if((data.watcheeUserIds.length > 1)){
-        getUserData(data.watcheeUserIds[0]).then((data) => {
-          inputWatching.value += data.name;
-        });
-        for (let i = 1; i < data.watcheeUserIds.length; i++){
+        for (let i = 0; i < data.watcheeUserIds.length; i++){
           getUserData(data.watcheeUserIds[i]).then((data) => {
-            inputWatching.value += ", " + data.name;
+            const name = createLinkName(data.name,"others-profile","my-screen");
+            const nameContainer = document.createElement("div");
+            nameContainer.appendChild(name);
+            inputWatching.appendChild(nameContainer);
+            // inputWatching.value += ", " + data.name;
           });
         }
       }
@@ -554,7 +563,7 @@ const navigateTab = () => {
       //call get my profile here
       if(targetLink === "profile"){
         const id = localStorage.getItem('userId');
-        getProfile(id,true, 'input[aria-label="id"]','input[aria-label="email"]','input[aria-label="name"]','input[aria-label="watching"]','profile-watched-by',"my-profile-picture", "job-list");
+        getProfile(id,true, 'input[aria-label="id"]','input[aria-label="email"]','input[aria-label="name"]',"my-watch-by",'profile-watched-by',"my-profile-picture", "job-list");
       }else if(targetLink === "create-job"){
         // addJob();
       }
@@ -651,14 +660,14 @@ const createLinkName = (name,showScreen,hideScreen) => {
         }
       }
     }
-    console.log(chosenUser);
-    console.log(user);
+
     if(chosenUser === user){
+      show(hideScreen);
+      hide(showScreen);
       const profileLink = document.querySelector('#profile');
       profileLink.click();
-      getProfile(user, true, 'input[aria-label="id"]', 'input[aria-label="email"]', 'input[aria-label="name"]', 'input[aria-label="watching"]', 'profile-watched-by', "my-profile-picture", "job-list");
     }else{
-      getProfile(chosenUser,false,'input[aria-label="other-id"]','input[aria-label="other-email"]','input[aria-label="other-name"]','input[aria-label="other-watching"]','other-profile-watched-by',"other-profile-picture", "other-job-list");
+      getProfile(chosenUser,false,'input[aria-label="other-id"]','input[aria-label="other-email"]','input[aria-label="other-name"]','other-watch-by','other-profile-watched-by',"other-profile-picture", "other-job-list");
       show(showScreen);
       hide(hideScreen);
     }
