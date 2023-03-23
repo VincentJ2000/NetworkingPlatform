@@ -651,16 +651,17 @@ const createLinkName = (name,showScreen,hideScreen) => {
         }
       }
     }
-    // console.log(chosenUser);
-    // console.log(user);
-    // if(chosenUser === user){
-    //   // show(showScreen);
-    //   // hide(hideScreen);
-    // }else{
-    getProfile(chosenUser,false,'input[aria-label="other-id"]','input[aria-label="other-email"]','input[aria-label="other-name"]','input[aria-label="other-watching"]','other-profile-watched-by',"other-profile-picture", "other-job-list");
-    show(showScreen);
-    hide(hideScreen);
-    // }
+    console.log(chosenUser);
+    console.log(user);
+    if(chosenUser === user){
+      const profileLink = document.querySelector('#profile');
+      profileLink.click();
+      getProfile(user, true, 'input[aria-label="id"]', 'input[aria-label="email"]', 'input[aria-label="name"]', 'input[aria-label="watching"]', 'profile-watched-by', "my-profile-picture", "job-list");
+    }else{
+      getProfile(chosenUser,false,'input[aria-label="other-id"]','input[aria-label="other-email"]','input[aria-label="other-name"]','input[aria-label="other-watching"]','other-profile-watched-by',"other-profile-picture", "other-job-list");
+      show(showScreen);
+      hide(hideScreen);
+    }
     
   };
   creatorLink.setAttribute("data-bs-dismiss","modal");
