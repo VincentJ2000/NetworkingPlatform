@@ -577,27 +577,52 @@ const addJob = () => {
     const inputDescription = document.getElementById("inputDescription");
     const inputImage = document.getElementById("validatedCustomFile");
 
-    const startDate = new Date(inputStart.value);
-    const startDateForm = startDate.toISOString();
-    console.log(startDateForm);
-    
-    if(inputImage.files[0]){
-      fileToDataUrl(inputImage.files[0]).then((data) => {
-        const payload = {
-          title: inputTitle.value,
-          image: data,
-          start: startDateForm,
-          description:inputDescription.value
-        }
-        console.log(payload);
-        apiCall('job', 'POST', payload)
-            .then((data) => {
-              if(data.error){
-                alert(data.error);
-              }
-            });
-      })
-    }
+    if(!inputTitle.value || !inputImage.files[0] || !inputStart.value || !inputDescription.value){
+      const alertForm = document.createElement('div');
+      alertForm.className = "alert alert-danger";
+      alertForm.setAttribute("role", "alert");
+      const alertText = document.createTextNode("No field should be empty! please enter the correct data for each field");
+      alertForm.appendChild(alertText);
+      document.getElementById("alert-form").appendChild(alertForm);
+      setTimeout(() => {
+        alertForm.remove();
+      }, 2000)
+    }else{
+      const startDate = new Date(inputStart.value);
+      const startDateForm = startDate.toISOString();
+      console.log(startDateForm);
+      
+      if(inputImage.files[0]){
+        fileToDataUrl(inputImage.files[0]).then((data) => {
+          const payload = {
+            title: inputTitle.value,
+            image: data,
+            start: startDateForm,
+            description:inputDescription.value
+          }
+          console.log(payload);
+          apiCall('job', 'POST', payload)
+              .then((data) => {
+                inputTitle.value = '';
+                inputStart.value = '';
+                inputDescription.value ='';
+                inputImage.files[0] = {};
+                if(data.error){
+                  alert(data.error);
+                }
+              });
+        })
+      }
+      const successForm = document.createElement('div');
+      successForm.className = "alert alert-success";
+      successForm.setAttribute("role", "alert");
+      const successText = document.createTextNode("You have successfully created a job!!:)");
+      successForm.appendChild(successText);
+      document.getElementById("alert-form").appendChild(successForm);
+      setTimeout(() => {
+        successForm.remove();
+      }, 3000)
+    }   
   })
 }
 
