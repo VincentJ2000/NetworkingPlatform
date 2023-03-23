@@ -3,38 +3,36 @@ import { BACKEND_PORT } from './config.js';
 import { fileToDataUrl } from './helpers.js';
 
 const apiCall = (path, method, body, arg) => {
-    return new Promise((resolve, reject) => {
-      const options = {
-        method: method,
-        headers: {
-          'Content-type': 'application/json',
-        },
-      };
+  return new Promise((resolve, reject) => {
+    const options = {
+      method: method,
+      headers: {
+        'Content-type': 'application/json',
+      },
+    };
 
-      if (method === 'GET') {
-        // Come back to this
-        path = path + arg;
-      } else {
-        options.body = JSON.stringify(body);
-      }
+    if (method === 'GET') {
+      path = path + arg;
+    } else {
+      options.body = JSON.stringify(body);
+    }
 
-      if (localStorage.getItem('token')) {
-        options.headers.Authorization = `Bearer ${localStorage.getItem('token')}`;
-      }
+    if (localStorage.getItem('token')) {
+      options.headers.Authorization = `Bearer ${localStorage.getItem('token')}`;
+    }
 
-      fetch('http://localhost:5005/' + path, options)
-        .then((response) => response.json())
-        .then((data) => {
-          if (data.error) {
-            showErrorModal(data.error);
-            // alert(data.error);
-          } else {
-            resolve(data);
-          }
-        });
-    });
-  
-  };
+    fetch('http://localhost:5005/' + path, options)
+      .then((response) => response.json())
+      .then((data) => {
+        if (data.error) {
+          showErrorModal(data.error);
+        } else {
+          resolve(data);
+        }
+      });
+  });
+
+};
 
 //register function
 document.getElementById('register-button').addEventListener('click', () => {
@@ -48,7 +46,6 @@ document.getElementById('register-button').addEventListener('click', () => {
     } else {
       if (password !== confirmPassword) {
         showErrorModal("Confirm password doest not match.");
-        // alert("Confirm password doest not match.");
       } else {
         const payload = {
             email: email,
@@ -100,6 +97,7 @@ const populateFeed = () => {
             const card = document.createElement("div");
             card.classList.add("card");
             card.classList.add("mb-3");
+            card.setAttribute("id", "card-poll");
 
             const cardImage = document.createElement("img");
             cardImage.classList.add("card-img-top");
@@ -109,6 +107,7 @@ const populateFeed = () => {
 
             const cardBody = document.createElement("div");
             cardBody.classList.add("card-body");
+            cardBody.setAttribute("id", "card-body-poll");
 
             const cardTitle = document.createElement("h3");
             cardTitle.classList.add("card-title");
@@ -135,14 +134,17 @@ const populateFeed = () => {
 
             const bottomContainer = document.createElement("div");
             bottomContainer.setAttribute("class", "flex-container");
+            bottomContainer.setAttribute("id", "bottom-container");
 
             // Likes and Comments Section
             const likesCommentsSection = document.createElement("div");
             likesCommentsSection.setAttribute("class", "flex-container");
+            likesCommentsSection.setAttribute("id", "likes-comments-poll");
             bottomContainer.appendChild(likesCommentsSection);
 
             const likesContainer = document.createElement("a");
             likesContainer.setAttribute("href", "");
+            likesContainer.setAttribute("id","likes-poll")
             likesContainer.setAttribute("class", "flex-item");
             likesContainer.setAttribute("data-bs-toggle", "modal");
             likesContainer.setAttribute("data-bs-target", "#likesModal");
@@ -153,6 +155,7 @@ const populateFeed = () => {
             const commentsContainer = document.createElement("a");
             commentsContainer.setAttribute("href", "");
             commentsContainer.setAttribute("class", "flex-item");
+            commentsContainer.setAttribute("id", "comments-poll");
             commentsContainer.setAttribute("data-bs-toggle", "modal");
             commentsContainer.setAttribute("data-bs-target", "#commentsModal");
             commentsContainer.textContent = "Comments: " + feedItem.comments.length;
@@ -286,7 +289,6 @@ const createModalDOM = (id, title, body) => {
       const likesName = createLinkName(item.userName,"others-profile","my-screen");
       const likeChild = document.createElement("div");
       likeChild.appendChild(likesName);
-      // likeChild.textContent = likesName;
       modalBody.appendChild(likeChild);
       let likesNames = JSON.parse(localStorage.getItem('likes-names'));
       likesNames.push({ name: item.userName, id: item.userId});
@@ -345,10 +347,8 @@ const createCommentChild = (comment) => {
   localStorage.setItem('comments-names', JSON.stringify(commentsNames));
 
   const individualComment = document.createElement("div");
-  // const commentTitle = document.createElement("h5");
 
   const commentName = createLinkName(comment.userName,"others-profile","my-screen");
-  // commentTitle.textContent = comment.userName;
 
   const commentInfo = document.createElement("p");
   commentInfo.textContent = comment.comment;
@@ -429,7 +429,6 @@ const getProfile = (id, myProfile, inputIdArg, inputEmailArg, inputNameArg, inpu
       inputId.value = '';
       inputEmail.value = '';
       inputName.value = '';
-      // inputWatching.value = '';
       inputWatchingProfile.textContent = '';
       
       if(data.image){
@@ -465,7 +464,6 @@ const getProfile = (id, myProfile, inputIdArg, inputEmailArg, inputNameArg, inpu
       inputId.value = data.id;
       inputEmail.value = data.email;
       inputName.value = data.name;
-      // inputWatching.value = "";
     
       while (inputWatching.firstChild) {
         inputWatching.removeChild(inputWatching.firstChild);
@@ -477,7 +475,6 @@ const getProfile = (id, myProfile, inputIdArg, inputEmailArg, inputNameArg, inpu
           const nameContainer = document.createElement("div");
           nameContainer.appendChild(name);
           inputWatching.appendChild(nameContainer);
-          // inputWatching.value += data.name;
         });
       }else if((data.watcheeUserIds.length > 1)){
         for (let i = 0; i < data.watcheeUserIds.length; i++){
@@ -486,7 +483,6 @@ const getProfile = (id, myProfile, inputIdArg, inputEmailArg, inputNameArg, inpu
             const nameContainer = document.createElement("div");
             nameContainer.appendChild(name);
             inputWatching.appendChild(nameContainer);
-            // inputWatching.value += ", " + data.name;
           });
         }
       }
@@ -634,7 +630,7 @@ const getDate = (dateString) => {
     const diffMinutes = Math.floor((difference % (1000 * 60 * 60)) / (1000 * 60));
     if (diffHours > 24){
         const year = givenDate.getFullYear();
-        const month = givenDate.getMonth() + 1; // Adding 1 because getMonth() returns a zero-based index
+        const month = givenDate.getMonth() + 1;
         const day = givenDate.getDate();
         return "Posted on " + day + "/" + month + "/" + year;
     }else{
@@ -733,8 +729,11 @@ if (localStorage.getItem('token')) {
     show('section-logged-in');
     hide('section-logged-out');
     populateFeed();
+    //Uncomment this for live feed (it works but screen keeps blinking)
+    // setInterval(() => populateFeed(), 1000);
     navigateTab();
     updateProfile();
     backButton();
 }
+
 

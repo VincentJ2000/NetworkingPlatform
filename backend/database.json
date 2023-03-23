@@ -33,7 +33,9 @@
       "start": "2023-03-31T00:00:00.000Z",
       "description": {},
       "createdAt": "2023-03-23T08:38:53.347Z",
-      "likes": {},
+      "likes": {
+        "95112": true
+      },
       "comments": []
     },
     "736844": {
@@ -44,8 +46,15 @@
       "start": "2023-03-03T00:00:00.000Z",
       "description": "be a ninja",
       "createdAt": "2023-03-23T08:43:29.354Z",
-      "likes": {},
-      "comments": []
+      "likes": {
+        "95112": true
+      },
+      "comments": [
+        {
+          "userId": "95112",
+          "comment": "asdf"
+        }
+      ]
     },
     "865058": {
       "id": "865058",
