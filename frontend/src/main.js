@@ -2,6 +2,15 @@ import { BACKEND_PORT } from './config.js';
 // A helper you may want to use when uploading new images to the server.
 import { fileToDataUrl } from './helpers.js';
 
+// Infinite Scroll
+let feedLimit = false;
+const feedIncrease = 5;
+let currentPage = 1;
+const loadMoreFeed = (pageIndex) => {
+  const startRange = (pageIndex - 1) * feedIncrease;
+  populateFeed(startRange);
+}
+
 const apiCall = (path, method, body, arg) => {
   return new Promise((resolve, reject) => {
     const options = {
@@ -88,11 +97,15 @@ document.getElementById('login-button').addEventListener('click', () => {
 });
 
 //Get Job feed
-const populateFeed = () => {
-    apiCall('job/feed', 'GET', {}, "?start=0")
+const populateFeed = (startIndex) => {
+    apiCall('job/feed', 'GET', {}, `?start=${startIndex}`)
     .then((data) => {
+        // Stop infinite scroll 
+        if (data.length === 0) {
+          feedLimit = true;
+        };
+
         data.sort((a, b) => b.createdAt - a.createdAt);
-        document.getElementById('feed-items').textContent = '';
         for (const feedItem of data) {
   
             const card = document.createElement("div");
@@ -517,7 +530,7 @@ const getProfile = (id, myProfile, inputIdArg, inputEmailArg, inputNameArg, inpu
         profilePicture.src = '../asset/default.jpeg';
       }
 
-      if(myProfile == true){
+      if(myProfile === true){
         const fileInput = document.getElementById("profile-picture-file");
         fileInput.addEventListener("change", () => {
           let payload = {
@@ -675,55 +688,14 @@ const getProfile = (id, myProfile, inputIdArg, inputEmailArg, inputNameArg, inpu
           cardText2Small.classList.add("text-muted");
           cardText2Small.textContent = getDate(jobItem.createdAt);
 
-          const postBtnContainer = document.createElement("div");
-          postBtnContainer.setAttribute("class", "flex-container");
-          const editPostBtn = document.createElement("button");
-          editPostBtn.setAttribute("class", "flex-item");
-          editPostBtn.setAttribute("class", "btn btn-warning");
-          editPostBtn.setAttribute("id", "editPostBtn");
-          editPostBtn.textContent = "Edit Post";
-          editPostBtn.setAttribute("data-bs-toggle", "modal");
-          editPostBtn.setAttribute("data-bs-target", `#editPostForm${jobItem.id}`);
-          postBtnContainer.appendChild(editPostBtn);
-          postBtnContainer.appendChild(createModalDOM(`editPostForm${jobItem.id}`, `Edit ${jobItem.title} job post.`, jobItem))
-          
-          const deletePostBtn = document.createElement("button");
-          deletePostBtn.setAttribute("class", "flex-item");
-          deletePostBtn.setAttribute("class", "btn btn-danger");
-          deletePostBtn.setAttribute("id", "deletePostBtn");
-          deletePostBtn.textContent = "Delete Post";
-          postBtnContainer.appendChild(deletePostBtn);
-          deletePostBtn.addEventListener("click", () => {
-            const payload = {
-              id: parseInt(jobItem.id)
-            };
-          
-            apiCall('job', 'DELETE', payload)
-            .then((data) => {
-              if (data.error) {
-                alert(data.error);
-              }
-            });
-
-            const successForm = document.createElement('div');
-            successForm.className = "alert alert-success";
-            successForm.setAttribute("role", "alert");
-            successForm.setAttribute("id", "alert-delete");
-            const successText = document.createTextNode("You have successfully deleted a job!");
-            successForm.appendChild(successText);
-            document.getElementById("my-profile").appendChild(successForm);
-            setTimeout(() => {
-              successForm.remove();
-            }, 3000)
-
-          })
-
           cardText2.appendChild(cardText2Small);
           cardBody.appendChild(cardTitle);
           cardBody.appendChild(cardText4);
           cardBody.appendChild(cardText1);
           cardBody.appendChild(cardText2);
-          cardBody.appendChild(postBtnContainer);
+          if (myProfile === true) {
+            cardBody.appendChild(editPost(jobItem));
+          }
           card.appendChild(cardImage);
           card.appendChild(cardBody);
           document.getElementById(jobListArg).appendChild(card);
@@ -779,7 +751,7 @@ const setToken = (token, id) => {
     localStorage.setItem('watched-by-names', JSON.stringify([]));
     show('section-logged-in');
     hide('section-logged-out');
-    populateFeed();
+    populateFeed(0);
     navigateTab();
     updateProfile();
     backButton();
@@ -998,9 +970,55 @@ const createLinkName = (name,showScreen,hideScreen) => {
   return creatorLink;
 }
 
+// Create edit own post container
+const editPost = (jobItem) => {
+  const postBtnContainer = document.createElement("div");
+  postBtnContainer.setAttribute("class", "flex-container");
+  const editPostBtn = document.createElement("button");
+  editPostBtn.setAttribute("class", "flex-item");
+  editPostBtn.setAttribute("class", "btn btn-warning");
+  editPostBtn.setAttribute("id", "editPostBtn");
+  editPostBtn.textContent = "Edit Post";
+  editPostBtn.setAttribute("data-bs-toggle", "modal");
+  editPostBtn.setAttribute("data-bs-target", `#editPostForm${jobItem.id}`);
+  postBtnContainer.appendChild(editPostBtn);
+  postBtnContainer.appendChild(createModalDOM(`editPostForm${jobItem.id}`, `Edit ${jobItem.title} job post.`, jobItem))
+  
+  const deletePostBtn = document.createElement("button");
+  deletePostBtn.setAttribute("class", "flex-item");
+  deletePostBtn.setAttribute("class", "btn btn-danger");
+  deletePostBtn.setAttribute("id", "deletePostBtn");
+  deletePostBtn.textContent = "Delete Post";
+  postBtnContainer.appendChild(deletePostBtn);
+  deletePostBtn.addEventListener("click", () => {
+    const payload = {
+      id: parseInt(jobItem.id)
+    };
+  
+    apiCall('job', 'DELETE', payload)
+    .then((data) => {
+      if (data.error) {
+        alert(data.error);
+      }
+    });
+
+    const successForm = document.createElement('div');
+    successForm.className = "alert alert-success";
+    successForm.setAttribute("role", "alert");
+    successForm.setAttribute("id", "alert-delete");
+    const successText = document.createTextNode("You have successfully deleted a job!");
+    successForm.appendChild(successText);
+    document.getElementById("my-profile").appendChild(successForm);
+    setTimeout(() => {
+      successForm.remove();
+    }, 3000)
+
+  })
+  return postBtnContainer
+}
+
 //logged in section
 document.getElementById('nav-register').addEventListener('click', () => {
-    
     show('register-page');
     hide('login-page');
 });
@@ -1026,7 +1044,7 @@ document.getElementById('logout').addEventListener('click', () => {
 if (localStorage.getItem('token')) {
     show('section-logged-in');
     hide('section-logged-out');
-    populateFeed();
+    populateFeed(0);
     //Uncomment this for live feed (it works but screen keeps blinking)
     // setInterval(() => populateFeed(), 1000);
     navigateTab();
@@ -1034,4 +1052,18 @@ if (localStorage.getItem('token')) {
     backButton();
 }
 
+const handleInfiniteScroll = () => {
+  setTimeout(() => {
+    const {scrollHeight,scrollTop,clientHeight} = document.documentElement;
+    if (scrollTop + clientHeight > scrollHeight - 5){
+      if (feedLimit === true) {
+        window.removeEventListener("scroll", handleInfiniteScroll);
+      } else {
+        currentPage++;
+        loadMoreFeed(currentPage);
+      }
+    }
+  }, 1000);
+}
 
+window.addEventListener("scroll", handleInfiniteScroll);
