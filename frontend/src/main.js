@@ -336,6 +336,87 @@ const createModalDOM = (id, title, body) => {
 
     modalFooter.appendChild(sendBtn);
     modalContent.appendChild(modalFooter);
+  } else if (id.includes("editPostForm")) {
+    const editPostForm = document.createElement("form");
+    const formContent = document.createElement("div");
+    formContent.setAttribute("class", "mb-3");
+    
+    const titleLabel = document.createElement("label");
+    titleLabel.setAttribute("for", "editTitle");
+    titleLabel.setAttribute("class", "col-form-label");
+    titleLabel.textContent = "Title:";
+    formContent.appendChild(titleLabel);
+    const inputTitle = document.createElement("input");
+    inputTitle.setAttribute("type", "text");
+    inputTitle.setAttribute("class", "form-control");
+    inputTitle.setAttribute("id", "editTitle");
+    inputTitle.setAttribute("placeholder", body.title);
+    formContent.appendChild(inputTitle);
+
+    const startLabel = document.createElement("label");
+    startLabel.setAttribute("for", "editStart");
+    startLabel.setAttribute("class", "col-form-label");
+    startLabel.textContent = "Start Date:";
+    formContent.appendChild(startLabel);
+    const inputStart = document.createElement("input");
+    inputStart.setAttribute("type", "date");
+    inputStart.setAttribute("class", "form-control");
+    inputStart.setAttribute("id", "editStart");
+    inputStart.setAttribute("value", body.start.substring(0,10));
+    formContent.appendChild(inputStart);
+
+    const descLabel = document.createElement("label");
+    descLabel.setAttribute("for", "editDesc");
+    descLabel.setAttribute("class", "col-form-label");
+    descLabel.textContent = "Description:";
+    formContent.appendChild(descLabel);
+    const inputDesc = document.createElement("textarea");
+    inputDesc.setAttribute("class", "form-control");
+    inputDesc.setAttribute("id", "editDesc");
+    inputDesc.setAttribute("placeholder", body.description);
+    formContent.appendChild(inputDesc);
+
+    const imageLabel = document.createElement("label");
+    imageLabel.setAttribute("for", "editImage");
+    imageLabel.setAttribute("class", "col-form-label");
+    imageLabel.textContent = "Job Image:";
+    formContent.appendChild(imageLabel);
+    const inputImage = document.createElement("input");
+    inputImage.setAttribute("type", "file");
+    inputImage.setAttribute("class", "form-control custom-file-input");
+    inputImage.setAttribute("id", "editImage");
+    inputImage.setAttribute("value", body.image);
+    formContent.appendChild(inputImage);
+
+    editPostForm.appendChild(formContent);
+    modalBody.appendChild(editPostForm);
+
+    const modalFooter = document.createElement("div");
+    modalFooter.setAttribute("class", "modal-footer");
+    const updatePost = document.createElement("button");
+    updatePost.setAttribute("type", "button");
+    updatePost.setAttribute("class", "btn btn-warning");
+    updatePost.setAttribute("data-bs-dismiss", "modal");
+    updatePost.textContent = "Update Job";
+    updatePost.addEventListener("click", () => {
+      const payload = {
+        id: body.id,
+        title: inputTitle.value ? inputTitle.value : body.title,
+        image: inputImage.value ? inputImage.value : body.image,
+        start: inputStart.value ? inputStart.value : body.start,
+        description: inputDesc.value ? inputDesc.value : body.description
+      }
+      
+      apiCall('job', 'PUT', payload)
+        .then((data) => {
+          if(data.error){ 
+            alert(data.error);
+          }
+        })
+    })
+
+    modalFooter.appendChild(updatePost);
+    modalContent.appendChild(modalFooter);
   }
   
   return modalContainer;
@@ -548,11 +629,55 @@ const getProfile = (id, myProfile, inputIdArg, inputEmailArg, inputNameArg, inpu
           cardText2Small.classList.add("text-muted");
           cardText2Small.textContent = getDate(jobItem.createdAt);
 
+          const postBtnContainer = document.createElement("div");
+          postBtnContainer.setAttribute("class", "flex-container");
+          const editPostBtn = document.createElement("button");
+          editPostBtn.setAttribute("class", "flex-item");
+          editPostBtn.setAttribute("class", "btn btn-warning");
+          editPostBtn.setAttribute("id", "editPostBtn");
+          editPostBtn.textContent = "Edit Post";
+          editPostBtn.setAttribute("data-bs-toggle", "modal");
+          editPostBtn.setAttribute("data-bs-target", `#editPostForm${jobItem.id}`);
+          postBtnContainer.appendChild(editPostBtn);
+          postBtnContainer.appendChild(createModalDOM(`editPostForm${jobItem.id}`, `Edit ${jobItem.title} job post.`, jobItem))
+          
+          const deletePostBtn = document.createElement("button");
+          deletePostBtn.setAttribute("class", "flex-item");
+          deletePostBtn.setAttribute("class", "btn btn-danger");
+          deletePostBtn.setAttribute("id", "deletePostBtn");
+          deletePostBtn.textContent = "Delete Post";
+          postBtnContainer.appendChild(deletePostBtn);
+          deletePostBtn.addEventListener("click", () => {
+            const payload = {
+              id: parseInt(jobItem.id)
+            };
+          
+            apiCall('job', 'DELETE', payload)
+            .then((data) => {
+              if (data.error) {
+                alert(data.error);
+              }
+            });
+
+            const successForm = document.createElement('div');
+            successForm.className = "alert alert-success";
+            successForm.setAttribute("role", "alert");
+            successForm.setAttribute("id", "alert-delete");
+            const successText = document.createTextNode("You have successfully deleted a job!");
+            successForm.appendChild(successText);
+            document.getElementById("my-profile").appendChild(successForm);
+            setTimeout(() => {
+              successForm.remove();
+            }, 3000)
+
+          })
+
           cardText2.appendChild(cardText2Small);
           cardBody.appendChild(cardTitle);
           cardBody.appendChild(cardText4);
           cardBody.appendChild(cardText1);
           cardBody.appendChild(cardText2);
+          cardBody.appendChild(postBtnContainer);
           card.appendChild(cardImage);
           card.appendChild(cardBody);
           document.getElementById(jobListArg).appendChild(card);
@@ -585,71 +710,11 @@ const navigateTab = () => {
       if(targetLink === "profile"){
         const id = localStorage.getItem('userId');
         getProfile(id,true, 'input[aria-label="id"]','input[aria-label="email"]','input[aria-label="name"]',"my-watch-by",'profile-watched-by',"my-profile-picture", "job-list");
-      }else if(targetLink === "create-job"){
-        addJob();
       }
     });
   });
 }
 
-//MILESTONE 5
-//adding a job
-const addJob = () => {
-  const submitButton = document.getElementById("create-job-button");
-  submitButton.addEventListener('click', () => {
-    const inputTitle = document.getElementById("inputTitle");
-    const inputStart = document.getElementById("inputStart");
-    const inputDescription = document.getElementById("inputDescription");
-    const inputImage = document.getElementById("validatedCustomFile");
-
-    if(!inputTitle.value || !inputImage.files[0] || !inputStart.value || !inputDescription.value){
-      const alertForm = document.createElement('div');
-      alertForm.className = "alert alert-danger";
-      alertForm.setAttribute("role", "alert");
-      const alertText = document.createTextNode("No field should be empty! please enter the correct data for each field");
-      alertForm.appendChild(alertText);
-      document.getElementById("alert-form").appendChild(alertForm);
-      setTimeout(() => {
-        alertForm.remove();
-      }, 2000)
-    }else{
-      const startDate = new Date(inputStart.value);
-      const startDateForm = startDate.toISOString();
-      
-      
-      if(inputImage.files[0]){
-        fileToDataUrl(inputImage.files[0]).then((data) => {
-          const payload = {
-            title: inputTitle.value,
-            image: data,
-            start: startDateForm,
-            description:inputDescription.value
-          }
-          
-          apiCall('job', 'POST', payload)
-              .then((data) => {
-                inputTitle.value = '';
-                inputStart.value = '';
-                inputDescription.value ='';
-                inputImage.files[0] = {};
-                if(data.error){
-                  alert(data.error);
-                }
-              });
-        })
-      }
-      const successForm = document.createElement('div');
-      successForm.className = "alert alert-success";
-      successForm.setAttribute("role", "alert");
-      const successText = document.createTextNode("You have successfully created a job!!:)");
-      successForm.appendChild(successText);
-      document.getElementById("alert-form").appendChild(successForm);
-      setTimeout(() => {
-        successForm.remove();
-      }, 3000)
-    }   
-  })
-}
 
 
 //helper functions
@@ -699,6 +764,94 @@ const backButton = () => {
     hide("others-profile");
   })
 }
+
+// Add Job
+document.getElementById("create-job-button").addEventListener('click', () => {
+  const inputTitle = document.getElementById("inputTitle");
+  const inputStart = document.getElementById("inputStart");
+  const inputDescription = document.getElementById("inputDescription");
+  const inputImage = document.getElementById("validatedCustomFile");
+
+  if(!inputTitle.value || !inputImage.files[0] || !inputStart.value || !inputDescription.value){
+    const alertForm = document.createElement('div');
+    alertForm.className = "alert alert-danger";
+    alertForm.setAttribute("role", "alert");
+    const alertText = document.createTextNode("No field should be empty! please enter the correct data for each field");
+    alertForm.appendChild(alertText);
+    document.getElementById("alert-form").appendChild(alertForm);
+    setTimeout(() => {
+      alertForm.remove();
+    }, 2000)
+  }else{
+    const startDate = new Date(inputStart.value);
+    const startDateForm = startDate.toISOString();
+    
+    
+    if(inputImage.files[0]){
+      try {
+        fileToDataUrl(inputImage.files[0]).then((data) => {
+          const payload = {
+            title: inputTitle.value,
+            image: data,
+            start: startDateForm,
+            description:inputDescription.value
+          }
+          
+          apiCall('job', 'POST', payload)
+              .then((data) => {
+                inputTitle.value = '';
+                inputStart.value = '';
+                inputDescription.value ='';
+                inputImage.value = null;
+                if(data.error){
+                  alert(data.error);
+                }
+              });
+        })
+
+        const successForm = document.createElement('div');
+        successForm.className = "alert alert-success";
+        successForm.setAttribute("role", "alert");
+        const successText = document.createTextNode("You have successfully created a job!!:)");
+        successForm.appendChild(successText);
+        document.getElementById("alert-form").appendChild(successForm);
+        setTimeout(() => {
+          successForm.remove();
+        }, 3000)
+      }
+      catch(err) {
+          console.log("data.error", err);
+          const alertForm = document.createElement('div');
+          alertForm.className = "alert alert-danger";
+          alertForm.setAttribute("role", "alert");
+          const alertText = document.createTextNode(err);
+          alertForm.appendChild(alertText);
+          document.getElementById("alert-form").appendChild(alertForm);
+          setTimeout(() => {
+            alertForm.remove();
+          }, 2000)
+      }
+    }
+  }   
+});
+
+// Watch User Form
+// document.getElementById("watch-user-button").addEventListener("click", () => {
+//   const watchEmail = document.getElementById("inputWatchEmail").value;
+
+//   const payload = {
+//     email: watchEmail,
+//     turnon: true
+//   };
+
+//   apiCall('user/watch', 'PUT', payload)
+//   .then((data) => {
+//     if (data.error) {
+//       alert(data.error);
+//     }
+//   });
+// });
+
 const createLinkName = (name,showScreen,hideScreen) => {
   const creatorLink = document.createElement("a");
   creatorLink.href = "#";
