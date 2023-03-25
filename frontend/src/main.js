@@ -672,7 +672,6 @@ const setToken = (token, id) => {
     navigateTab();
     updateProfile();
     backButton();
-    populateFeed();
 }
 const getDate = (dateString) => {
     const givenDate = new Date(dateString);
@@ -704,14 +703,14 @@ const createLinkName = (name,showScreen,hideScreen) => {
   const creatorLink = document.createElement("a");
   creatorLink.href = "#";
   creatorLink.textContent = name;
-  const jobNames = JSON.parse(localStorage.getItem('job-names'));
-  const likesNames = JSON.parse(localStorage.getItem('likes-names'));
-  const commentsNames = JSON.parse(localStorage.getItem('comments-names'));
-  const watchedByNames = JSON.parse(localStorage.getItem('watched-by-names'));
-
-  const user = JSON.parse(localStorage.getItem('userId'));
+  
   //get the id of the other user stored in a list in local storage
   creatorLink.onclick = (event) => {
+    const jobNames = JSON.parse(localStorage.getItem('job-names'));
+    const likesNames = JSON.parse(localStorage.getItem('likes-names'));
+    const commentsNames = JSON.parse(localStorage.getItem('comments-names'));
+    const watchedByNames = JSON.parse(localStorage.getItem('watched-by-names'));
+    const user = JSON.parse(localStorage.getItem('userId'));
     const otherUser = event.target.textContent;
     // console.log(event.target.textContent)
     let chosenUser;
