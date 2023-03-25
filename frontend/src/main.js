@@ -147,20 +147,20 @@ const populateFeed = () => {
             likesContainer.setAttribute("id","likes-poll")
             likesContainer.setAttribute("class", "flex-item");
             likesContainer.setAttribute("data-bs-toggle", "modal");
-            likesContainer.setAttribute("data-bs-target", "#likesModal");
+            likesContainer.setAttribute("data-bs-target", `#likesModal${feedItem.id}`);
             likesContainer.textContent = "Likes: " + feedItem.likes.length;
             likesCommentsSection.appendChild(likesContainer);
-            likesCommentsSection.appendChild(createModalDOM("likesModal", "Liked by", feedItem.likes));
+            likesCommentsSection.appendChild(createModalDOM(`likesModal${feedItem.id}`, "Liked by", feedItem.likes));
 
             const commentsContainer = document.createElement("a");
             commentsContainer.setAttribute("href", "");
             commentsContainer.setAttribute("class", "flex-item");
             commentsContainer.setAttribute("id", "comments-poll");
             commentsContainer.setAttribute("data-bs-toggle", "modal");
-            commentsContainer.setAttribute("data-bs-target", "#commentsModal");
+            commentsContainer.setAttribute("data-bs-target", `#commentsModal${feedItem.id}`);
             commentsContainer.textContent = "Comments: " + feedItem.comments.length;
             likesCommentsSection.appendChild(commentsContainer);
-            likesCommentsSection.appendChild(createModalDOM("commentsModal", "Comments", feedItem.comments));
+            likesCommentsSection.appendChild(createModalDOM(`commentsModal${feedItem.id}`, "Comments", feedItem.comments));
 
             // Like and Comment buttons
             const btnContainer = document.createElement("div");
@@ -208,9 +208,9 @@ const populateFeed = () => {
             commentBtn.setAttribute("id", "commentBtn");
             commentBtn.textContent = "Comment";
             commentBtn.setAttribute("data-bs-toggle", "modal");
-            commentBtn.setAttribute("data-bs-target", "#commentForm");
+            commentBtn.setAttribute("data-bs-target", `#commentForm${feedItem.id}`);
             btnContainer.appendChild(commentBtn);
-            btnContainer.appendChild(createModalDOM("commentForm", `New comment for ${feedItem.title} job post.`, parseInt(feedItem.id)))
+            btnContainer.appendChild(createModalDOM(`commentForm${feedItem.id}`, `New comment for ${feedItem.title} job post.`, parseInt(feedItem.id)))
 
             const cardText2 = document.createElement("p");
             cardText2.classList.add("card-text");
@@ -284,7 +284,7 @@ const createModalDOM = (id, title, body) => {
   modalBody.setAttribute("class", "modal-body");
   modalContent.appendChild(modalBody);
 
-  if (id === "likesModal") {
+  if (id.includes("likesModal")) {
     for (const item of body) {
       const likesName = createLinkName(item.userName,"others-profile","my-screen");
       const likeChild = document.createElement("div");
@@ -295,12 +295,12 @@ const createModalDOM = (id, title, body) => {
       localStorage.setItem('likes-names', JSON.stringify(likesNames));
     }
 
-  } else if (id === "commentsModal") {
+  } else if (id.includes("commentsModal")) {
     for (const item of body) {
       const commentChild = createCommentChild(item);
       modalBody.appendChild(commentChild);
     }
-  } else if (id === "commentForm") {
+  } else if (id.includes("commentForm")) {
     const commentForm = document.createElement("form");
     const formContent = document.createElement("div");
     formContent.setAttribute("class", "mb-3");
@@ -715,13 +715,9 @@ const createLinkName = (name,showScreen,hideScreen) => {
     // console.log(event.target.textContent)
     let chosenUser;
 
-    console.log(jobNames);
     for (let i = 0; i < jobNames.length; i++) {
-      console.log(jobNames[i].name);
-      console.log(otherUser);
       if (jobNames[i].name === otherUser) {
         chosenUser = jobNames[i].id;
-        console.log(chosenUser);
         break;
       }
     }
@@ -750,7 +746,7 @@ const createLinkName = (name,showScreen,hideScreen) => {
         }
       }
     }
-    console.log(chosenUser);
+    
     if(chosenUser === user){
       show(hideScreen);
       hide(showScreen);
