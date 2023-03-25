@@ -26,6 +26,7 @@ const apiCall = (path, method, body, arg) => {
       .then((data) => {
         if (data.error) {
           showErrorModal(data.error);
+          reject(data);
         } else {
           resolve(data);
         }
@@ -546,8 +547,14 @@ const getProfile = (id, myProfile, inputIdArg, inputEmailArg, inputNameArg, inpu
       while (inputWatching.firstChild) {
         inputWatching.removeChild(inputWatching.firstChild);
       }
+
+      let watchFound = false;
+      const loggedUser = parseInt(localStorage.getItem('userId'));
       
       if (data.watcheeUserIds.length === 1){
+        if (data.watcheeUserIds[0] === loggedUser) {
+          watchFound = true;
+        }
         getUserData(data.watcheeUserIds[0]).then((data) => {
           const name = createLinkName(data.name,"others-profile","my-screen");
           const nameContainer = document.createElement("div");
@@ -570,6 +577,9 @@ const getProfile = (id, myProfile, inputIdArg, inputEmailArg, inputNameArg, inpu
         });
       }else if((data.watcheeUserIds.length > 1)){
         for (let i = 0; i < data.watcheeUserIds.length; i++){
+          if (data.watcheeUserIds[i] === loggedUser) {
+            watchFound = true;
+          }
           getUserData(data.watcheeUserIds[i]).then((data) => {
             const name = createLinkName(data.name,"others-profile","my-screen");
             const nameContainer = document.createElement("div");
@@ -592,6 +602,42 @@ const getProfile = (id, myProfile, inputIdArg, inputEmailArg, inputNameArg, inpu
           });
         }
       }
+
+      // Watch Button
+      const watchBtn = document.getElementById("watchBtn");
+      watchBtn.setAttribute("class", "btn btn-primary");
+      watchBtn.textContent = `Watch ${data.name}`;
+
+      if (watchFound === true) {
+        watchBtn.setAttribute("class", "btn btn-secondary");
+        watchBtn.textContent = `Unwatch ${data.name}`;
+      };
+      
+      watchBtn.addEventListener("click", () => {
+        let watchState = true;
+
+        if (watchFound === true) {
+          watchState = false;
+          watchBtn.setAttribute("class", "btn btn-primary");
+          watchBtn.textContent = `Watch ${data.name}`;
+        } else {
+          watchState = true;
+          watchBtn.setAttribute("class", "btn btn-secondary");
+          watchBtn.textContent = `Unwatch ${data.name}`;
+        }
+        
+        const payload = {
+          email: data.email,
+          turnon: watchState
+        };
+
+        apiCall('user/watch', 'PUT', payload)
+        .then((data) => {
+          if (data.error) {
+            alert(data.error);
+          }
+        });
+      })
       
       const jobs = data.jobs;
       document.getElementById(jobListArg).textContent = '';
@@ -820,7 +866,6 @@ document.getElementById("create-job-button").addEventListener('click', () => {
         }, 3000)
       }
       catch(err) {
-          console.log("data.error", err);
           const alertForm = document.createElement('div');
           alertForm.className = "alert alert-danger";
           alertForm.setAttribute("role", "alert");
@@ -836,21 +881,58 @@ document.getElementById("create-job-button").addEventListener('click', () => {
 });
 
 // Watch User Form
-// document.getElementById("watch-user-button").addEventListener("click", () => {
-//   const watchEmail = document.getElementById("inputWatchEmail").value;
+document.getElementById("watch-user-button").addEventListener("click", () => {
+  getUserData(localStorage.getItem('userId'))
+  .then((data) => {
+    const watchEmail = document.getElementById("inputWatchEmail").value;
+    if (data.email !== watchEmail) {
+      const payload = {
+        email: watchEmail,
+        turnon: true
+      };
 
-//   const payload = {
-//     email: watchEmail,
-//     turnon: true
-//   };
-
-//   apiCall('user/watch', 'PUT', payload)
-//   .then((data) => {
-//     if (data.error) {
-//       alert(data.error);
-//     }
-//   });
-// });
+      apiCall('user/watch', 'PUT', payload)
+        .then((data) => {
+          const successForm = document.createElement('div');
+          successForm.className = "alert alert-success";
+          successForm.setAttribute("role", "alert");
+          const successText = document.createTextNode(`Congrats stalker! You are now watching your friend!!:)`);
+          successForm.appendChild(successText);
+          document.getElementById("alert-watch").appendChild(successForm);
+          setTimeout(() => {
+            successForm.remove();
+          }, 3000)
+          document.getElementById("inputWatchEmail").value = "";
+        })
+        .catch((data) => {
+          console.log(data.error);
+          if (!(data instanceof TypeError)) {
+            const alertForm = document.createElement('div');
+            alertForm.className = "alert alert-danger";
+            alertForm.setAttribute("role", "alert");
+            const alertText = document.createTextNode("Wrong email bro, try again...");
+            alertForm.appendChild(alertText);
+            document.getElementById("alert-watch").appendChild(alertForm);
+            setTimeout(() => {
+              alertForm.remove();
+            }, 2000)
+          } else {
+            console.log("Caught some other error: " );
+          }
+        })
+    } else {
+      const alertForm = document.createElement('div');
+      alertForm.className = "alert alert-danger";
+      alertForm.setAttribute("role", "alert");
+      const alertText = document.createTextNode("Watching yourself isn't allowed mate!");
+      alertForm.appendChild(alertText);
+      document.getElementById("alert-watch").appendChild(alertForm);
+      setTimeout(() => {
+        alertForm.remove();
+      }, 2000)
+    }
+  })
+});
 
 const createLinkName = (name,showScreen,hideScreen) => {
   const creatorLink = document.createElement("a");
