@@ -373,7 +373,6 @@ const updateProfile = () => {
     const inputs = document.querySelectorAll('input[aria-label="email"], input[aria-label="password"], input[aria-label="name"]');
     const isEditing = editButton.innerText === 'Edit Profile';
     inputs.forEach(input => {
-      console.log(input);
       input.toggleAttribute('readonly', !isEditing);
       if (isEditing) {
         prevValues[input.getAttribute('aria-label')] = input.value;
@@ -397,7 +396,6 @@ const updateProfile = () => {
     if (isEditing) {
       editButton.innerText = 'Done';
     } else {
-      console.log(payload);
       apiCall('user', 'PUT', payload)
         .then((data) => {
           if (data.error) {
@@ -448,7 +446,6 @@ const getProfile = (id, myProfile, inputIdArg, inputEmailArg, inputNameArg, inpu
           const file = fileInput.files[0];
           fileToDataUrl(file).then((data) => {
             payload["image"] = data;
-            console.log(payload);
             apiCall('user', 'PUT', payload)
             .then((data) => {
               if(data.error){ 
@@ -475,6 +472,20 @@ const getProfile = (id, myProfile, inputIdArg, inputEmailArg, inputNameArg, inpu
           const nameContainer = document.createElement("div");
           nameContainer.appendChild(name);
           inputWatching.appendChild(nameContainer);
+
+          let watchedBy = JSON.parse(localStorage.getItem('watched-by-names'));
+          let valueExist = false;
+          for (let i = 0; i < watchedBy.length; i++) {
+            if (watchedBy[i].name === data.name) {
+              valueExist = true;
+              break;
+            }
+          }
+
+          if (valueExist === false){
+            watchedBy.push({ name: data.name, id: data.id});
+            localStorage.setItem('watched-by-names', JSON.stringify(watchedBy));
+          }
         });
       }else if((data.watcheeUserIds.length > 1)){
         for (let i = 0; i < data.watcheeUserIds.length; i++){
@@ -483,6 +494,20 @@ const getProfile = (id, myProfile, inputIdArg, inputEmailArg, inputNameArg, inpu
             const nameContainer = document.createElement("div");
             nameContainer.appendChild(name);
             inputWatching.appendChild(nameContainer);
+
+            let watchedBy = JSON.parse(localStorage.getItem('watched-by-names'));
+            let valueExist = false;
+            for (let i = 0; i < watchedBy.length; i++) {
+              if (watchedBy[i].name === data.name) {
+                valueExist = true;
+                break;
+              }
+            }
+
+            if (valueExist === false){
+              watchedBy.push({ name: data.name, id: data.id});
+              localStorage.setItem('watched-by-names', JSON.stringify(watchedBy));
+            }
           });
         }
       }
@@ -590,7 +615,7 @@ const addJob = () => {
     }else{
       const startDate = new Date(inputStart.value);
       const startDateForm = startDate.toISOString();
-      console.log(startDateForm);
+      
       
       if(inputImage.files[0]){
         fileToDataUrl(inputImage.files[0]).then((data) => {
@@ -600,7 +625,7 @@ const addJob = () => {
             start: startDateForm,
             description:inputDescription.value
           }
-          console.log(payload);
+          
           apiCall('job', 'POST', payload)
               .then((data) => {
                 inputTitle.value = '';
@@ -640,12 +665,14 @@ const setToken = (token, id) => {
     localStorage.setItem('job-names', JSON.stringify([]));
     localStorage.setItem('likes-names', JSON.stringify([]));
     localStorage.setItem('comments-names', JSON.stringify([]));
+    localStorage.setItem('watched-by-names', JSON.stringify([]));
     show('section-logged-in');
     hide('section-logged-out');
     populateFeed();
     navigateTab();
     updateProfile();
     backButton();
+    populateFeed();
 }
 const getDate = (dateString) => {
     const givenDate = new Date(dateString);
@@ -680,16 +707,22 @@ const createLinkName = (name,showScreen,hideScreen) => {
   const jobNames = JSON.parse(localStorage.getItem('job-names'));
   const likesNames = JSON.parse(localStorage.getItem('likes-names'));
   const commentsNames = JSON.parse(localStorage.getItem('comments-names'));
+  const watchedByNames = JSON.parse(localStorage.getItem('watched-by-names'));
+
   const user = JSON.parse(localStorage.getItem('userId'));
   //get the id of the other user stored in a list in local storage
   creatorLink.onclick = (event) => {
     const otherUser = event.target.textContent;
-    console.log(event.target.textContent)
+    // console.log(event.target.textContent)
     let chosenUser;
 
+    console.log(jobNames);
     for (let i = 0; i < jobNames.length; i++) {
+      console.log(jobNames[i].name);
+      console.log(otherUser);
       if (jobNames[i].name === otherUser) {
         chosenUser = jobNames[i].id;
+        console.log(chosenUser);
         break;
       }
     }
@@ -710,6 +743,15 @@ const createLinkName = (name,showScreen,hideScreen) => {
       }
     }
 
+    if(!chosenUser){
+      for (let i = 0; i < watchedByNames.length; i++) {
+        if (watchedByNames[i].name === otherUser) {
+          chosenUser = watchedByNames[i].id;
+          break;
+        }
+      }
+    }
+    console.log(chosenUser);
     if(chosenUser === user){
       show(hideScreen);
       hide(showScreen);
@@ -747,6 +789,7 @@ document.getElementById('logout').addEventListener('click', () => {
     localStorage.removeItem('job-names');
     localStorage.removeItem('likes-names');
     localStorage.removeItem('comments-names');
+    localStorage.removeItem('watched-by-names');
 });
 
 //MAIN

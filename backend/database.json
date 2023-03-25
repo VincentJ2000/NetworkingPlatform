@@ -44,8 +44,15 @@
       "start": "2023-03-03T00:00:00.000Z",
       "description": "ASDASDF",
       "createdAt": "2023-03-23T13:11:14.038Z",
-      "likes": {},
-      "comments": []
+      "likes": {
+        "95112": true
+      },
+      "comments": [
+        {
+          "userId": "95112",
+          "comment": "sdf"
+        }
+      ]
     },
     "257581": {
       "id": "257581",
