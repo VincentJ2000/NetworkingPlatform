@@ -102,7 +102,6 @@ document.getElementById('login-button').addEventListener('click', () => {
 const populateFeed = (startIndex) => {
     apiCall('job/feed', 'GET', {}, `?start=${startIndex}`)
     .then((data) => {
-        console.log("load again");
         // Stop infinite scroll 
         if (data.length === 0) {
           feedLimit = true;
@@ -110,9 +109,7 @@ const populateFeed = (startIndex) => {
 
         data.sort((a, b) => b.createdAt - a.createdAt);
         for (const feedItem of data) {
-          console.log(feedItem);
           if (!newestJobId) {
-            console.log(feedItem.id);
             newestJobId = feedItem.id;
           }
 
@@ -171,7 +168,6 @@ const populateFeed = (startIndex) => {
           likesContainer.setAttribute("data-bs-toggle", "modal");
           likesContainer.setAttribute("data-bs-target", `#likesModal${feedItem.id}`);
           likesContainer.textContent = "Likes: " + feedItem.likes.length;
-          console.log("feedItem", likesContainer.textContent);
           likesCommentsSection.appendChild(likesContainer);
           likesCommentsSection.appendChild(createModalDOM(`likesModal${feedItem.id}`, "Liked by", feedItem.likes));
 
@@ -1023,7 +1019,7 @@ if (localStorage.getItem('token')) {
       apiCall('job/feed', 'GET', {}, "?start=0")
       .then((data) => {
           data.sort((a, b) => b.createdAt - a.createdAt);
-          if (data[0].id !== newestJobId && foundNew === false) {
+          if (newestJobId && data[0].id !== newestJobId && foundNew === false) {
             foundNew = true;
             getUserData(data[0].creatorId).then((data) => {
               createAlertForm("alert alert-success", `${data.name} created a new job post!`, "notification");
@@ -1052,4 +1048,30 @@ const handleInfiniteScroll = () => {
   }, 1000);
 }
 
+const displayHash = () => {
+  const URLhash = window.location.hash;
+
+  if (URLhash === "#feed") {
+    const homeLink = document.querySelector('#home');
+    homeLink.click();
+  }
+  
+  if (URLhash.includes("#profile")) {
+    const loggedUser = localStorage.getItem('userId');
+    const hashUser = URLhash.split("=")[1];
+    
+    if (hashUser === loggedUser) {
+      show("my-screen");
+      hide("others-profile");
+      const profileLink = document.querySelector('#profile');
+      profileLink.click();
+    } else {
+      getProfile(hashUser,false,'input[aria-label="other-id"]','input[aria-label="other-email"]','input[aria-label="other-name"]','other-watch-by','other-profile-watched-by',"other-profile-picture", "other-job-list");
+      show("others-profile");
+      hide("my-screen");
+    }
+  }
+}
+
 window.addEventListener("scroll", handleInfiniteScroll);
+window.addEventListener("hashchange", displayHash);
