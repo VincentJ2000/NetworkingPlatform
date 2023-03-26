@@ -862,7 +862,6 @@ document.getElementById("watch-user-button").addEventListener("click", () => {
           document.getElementById("inputWatchEmail").value = "";
         })
         .catch((data) => {
-          console.log(data.error);
           if (!(data instanceof TypeError)) {
             createAlertForm("alert alert-danger", "Wrong email bro, try again...", "alert-watch");
           } else {
@@ -888,7 +887,6 @@ const createLinkName = (name,showScreen,hideScreen) => {
     const watchedByNames = JSON.parse(localStorage.getItem('watched-by-names'));
     const user = JSON.parse(localStorage.getItem('userId'));
     const otherUser = event.target.textContent;
-    // console.log(event.target.textContent)
     let chosenUser;
 
     for (let i = 0; i < jobNames.length; i++) {
@@ -1027,8 +1025,6 @@ if (localStorage.getItem('token')) {
           }
       });
     }, 1000)
-    //Uncomment this for live feed (it works but screen keeps blinking)
-    // setInterval(() => populateFeed(0), 1000);
     navigateTab();
     updateProfile();
     backButton();
