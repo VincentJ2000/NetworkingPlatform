@@ -6,6 +6,8 @@ import { fileToDataUrl } from './helpers.js';
 let feedLimit = false;
 const feedIncrease = 5;
 let currentPage = 1;
+let newestJobId;
+let foundNew = false;
 const loadMoreFeed = (pageIndex) => {
   const startRange = (pageIndex - 1) * feedIncrease;
   populateFeed(startRange);
@@ -100,6 +102,7 @@ document.getElementById('login-button').addEventListener('click', () => {
 const populateFeed = (startIndex) => {
     apiCall('job/feed', 'GET', {}, `?start=${startIndex}`)
     .then((data) => {
+        console.log("load again");
         // Stop infinite scroll 
         if (data.length === 0) {
           feedLimit = true;
@@ -107,142 +110,148 @@ const populateFeed = (startIndex) => {
 
         data.sort((a, b) => b.createdAt - a.createdAt);
         for (const feedItem of data) {
-  
-            const card = document.createElement("div");
-            card.classList.add("card");
-            card.classList.add("mb-3");
-            card.setAttribute("id", "card-poll");
+          console.log(feedItem);
+          if (!newestJobId) {
+            console.log(feedItem.id);
+            newestJobId = feedItem.id;
+          }
 
-            const cardImage = document.createElement("img");
-            cardImage.classList.add("card-img-top");
-            cardImage.setAttribute("src", feedItem.image);
-            cardImage.setAttribute("alt", "Job Image");
-            cardImage.setAttribute("style", "max-width: 100%; height: 200px;");
+          const card = document.createElement("div");
+          card.classList.add("card");
+          card.classList.add("mb-3");
+          card.setAttribute("id", "card-poll");
 
-            const cardBody = document.createElement("div");
-            cardBody.classList.add("card-body");
-            cardBody.setAttribute("id", "card-body-poll");
+          const cardImage = document.createElement("img");
+          cardImage.classList.add("card-img-top");
+          cardImage.setAttribute("src", feedItem.image);
+          cardImage.setAttribute("alt", "Job Image");
+          cardImage.setAttribute("style", "max-width: 100%; height: 200px;");
 
-            const cardTitle = document.createElement("h3");
-            cardTitle.classList.add("card-title");
-            cardTitle.textContent = feedItem.title;
+          const cardBody = document.createElement("div");
+          cardBody.classList.add("card-body");
+          cardBody.setAttribute("id", "card-body-poll");
 
-            const cardText1 = document.createElement("p");
-            cardText1.classList.add("card-text");
-            cardText1.textContent = feedItem.description;
+          const cardTitle = document.createElement("h3");
+          cardTitle.classList.add("card-title");
+          cardTitle.textContent = feedItem.title;
 
-            const cardText4 = document.createElement("p");
-            cardText4.classList.add("card-text");
-            cardText4.textContent = "Start Date: " + feedItem.start.substring(0,10);
+          const cardText1 = document.createElement("p");
+          cardText1.classList.add("card-text");
+          cardText1.textContent = feedItem.description;
 
-            const cardText3 = document.createElement("p");
-            cardText3.classList.add("card-text");
-            getUserData(feedItem.creatorId).then((data) => {
-              cardText3.textContent = "Creator: "
-              const creatorName = createLinkName(data.name,"others-profile","my-screen");
-              cardText3.appendChild(creatorName);
-              let jobNames = JSON.parse(localStorage.getItem('job-names'));
-              jobNames.push({ name: data.name, id: feedItem.creatorId });
-              localStorage.setItem('job-names', JSON.stringify(jobNames));
-            })
+          const cardText4 = document.createElement("p");
+          cardText4.classList.add("card-text");
+          cardText4.textContent = "Start Date: " + feedItem.start.substring(0,10);
 
-            const bottomContainer = document.createElement("div");
-            bottomContainer.setAttribute("class", "flex-container");
-            bottomContainer.setAttribute("id", "bottom-container");
+          const cardText3 = document.createElement("p");
+          cardText3.classList.add("card-text");
+          getUserData(feedItem.creatorId).then((data) => {
+            cardText3.textContent = "Creator: "
+            const creatorName = createLinkName(data.name,"others-profile","my-screen");
+            cardText3.appendChild(creatorName);
+            let jobNames = JSON.parse(localStorage.getItem('job-names'));
+            jobNames.push({ name: data.name, id: feedItem.creatorId });
+            localStorage.setItem('job-names', JSON.stringify(jobNames));
+          })
 
-            // Likes and Comments Section
-            const likesCommentsSection = document.createElement("div");
-            likesCommentsSection.setAttribute("class", "flex-container");
-            likesCommentsSection.setAttribute("id", "likes-comments-poll");
-            bottomContainer.appendChild(likesCommentsSection);
+          const bottomContainer = document.createElement("div");
+          bottomContainer.setAttribute("class", "flex-container");
+          bottomContainer.setAttribute("id", "bottom-container");
 
-            const likesContainer = document.createElement("a");
-            likesContainer.setAttribute("href", "");
-            likesContainer.setAttribute("id","likes-poll")
-            likesContainer.setAttribute("class", "flex-item");
-            likesContainer.setAttribute("data-bs-toggle", "modal");
-            likesContainer.setAttribute("data-bs-target", `#likesModal${feedItem.id}`);
-            likesContainer.textContent = "Likes: " + feedItem.likes.length;
-            likesCommentsSection.appendChild(likesContainer);
-            likesCommentsSection.appendChild(createModalDOM(`likesModal${feedItem.id}`, "Liked by", feedItem.likes));
+          // Likes and Comments Section
+          const likesCommentsSection = document.createElement("div");
+          likesCommentsSection.setAttribute("class", "flex-container");
+          likesCommentsSection.setAttribute("id", "likes-comments-poll");
+          bottomContainer.appendChild(likesCommentsSection);
 
-            const commentsContainer = document.createElement("a");
-            commentsContainer.setAttribute("href", "");
-            commentsContainer.setAttribute("class", "flex-item");
-            commentsContainer.setAttribute("id", "comments-poll");
-            commentsContainer.setAttribute("data-bs-toggle", "modal");
-            commentsContainer.setAttribute("data-bs-target", `#commentsModal${feedItem.id}`);
-            commentsContainer.textContent = "Comments: " + feedItem.comments.length;
-            likesCommentsSection.appendChild(commentsContainer);
-            likesCommentsSection.appendChild(createModalDOM(`commentsModal${feedItem.id}`, "Comments", feedItem.comments));
+          const likesContainer = document.createElement("a");
+          likesContainer.setAttribute("href", "");
+          likesContainer.setAttribute("id","likes-poll")
+          likesContainer.setAttribute("class", "flex-item");
+          likesContainer.setAttribute("data-bs-toggle", "modal");
+          likesContainer.setAttribute("data-bs-target", `#likesModal${feedItem.id}`);
+          likesContainer.textContent = "Likes: " + feedItem.likes.length;
+          console.log("feedItem", likesContainer.textContent);
+          likesCommentsSection.appendChild(likesContainer);
+          likesCommentsSection.appendChild(createModalDOM(`likesModal${feedItem.id}`, "Liked by", feedItem.likes));
 
-            // Like and Comment buttons
-            const btnContainer = document.createElement("div");
-            btnContainer.setAttribute("class", "flex-container");
-            bottomContainer.appendChild(btnContainer);
+          const commentsContainer = document.createElement("a");
+          commentsContainer.setAttribute("href", "");
+          commentsContainer.setAttribute("class", "flex-item");
+          commentsContainer.setAttribute("id", "comments-poll");
+          commentsContainer.setAttribute("data-bs-toggle", "modal");
+          commentsContainer.setAttribute("data-bs-target", `#commentsModal${feedItem.id}`);
+          commentsContainer.textContent = "Comments: " + feedItem.comments.length;
+          likesCommentsSection.appendChild(commentsContainer);
+          likesCommentsSection.appendChild(createModalDOM(`commentsModal${feedItem.id}`, "Comments", feedItem.comments));
 
-            // Like button
-            const likeBtn = document.createElement("button");
-            likeBtn.setAttribute("class", "flex-item");
-            likeBtn.setAttribute("class", "btn btn-primary");
-            likeBtn.setAttribute("id", "likeBtn");
-            likeBtn.textContent = "Like";
-            feedItem.likes.forEach((item) => {
-              if (item.userId === parseInt(localStorage.getItem('userId'))) {
-                likeBtn.textContent = "Unlike";
-                likeBtn.setAttribute("class", "btn btn-secondary")
-              }
-            })
+          // Like and Comment buttons
+          const btnContainer = document.createElement("div");
+          btnContainer.setAttribute("class", "flex-container");
+          bottomContainer.appendChild(btnContainer);
 
-            likeBtn.addEventListener("click", () => {
-              let likeState = true;
+          // Like button
+          const likeBtn = document.createElement("button");
+          likeBtn.setAttribute("class", "flex-item");
+          likeBtn.setAttribute("class", "btn btn-primary");
+          likeBtn.setAttribute("id", "likeBtn");
+          likeBtn.textContent = "Like";
+          feedItem.likes.forEach((item) => {
+            if (item.userId === parseInt(localStorage.getItem('userId'))) {
+              likeBtn.textContent = "Unlike";
+              likeBtn.setAttribute("class", "btn btn-secondary")
+            }
+          })
 
-              if (likeBtn.textContent === "Unlike") {
-                likeState = false;
-                likeBtn.textContent = "Like";
-                likeBtn.setAttribute("class", "btn btn-primary");
-              } else {
-                likeState = true;
-                likeBtn.textContent = "Unlike";
-                likeBtn.setAttribute("class", "btn btn-secondary")
-              }
+          likeBtn.addEventListener("click", () => {
+            let likeState = true;
 
-              const payload = {
-                id: parseInt(feedItem.id),
-                turnon: likeState
-              }
-              apiCall('job/like', 'PUT', payload);
-            })
-            btnContainer.appendChild(likeBtn);
+            if (likeBtn.textContent === "Unlike") {
+              likeState = false;
+              likeBtn.textContent = "Like";
+              likeBtn.setAttribute("class", "btn btn-primary");
+            } else {
+              likeState = true;
+              likeBtn.textContent = "Unlike";
+              likeBtn.setAttribute("class", "btn btn-secondary")
+            }
 
-            // Comment button
-            const commentBtn = document.createElement("button");
-            commentBtn.setAttribute("class", "flex-item");
-            commentBtn.setAttribute("class", "btn btn-primary");
-            commentBtn.setAttribute("id", "commentBtn");
-            commentBtn.textContent = "Comment";
-            commentBtn.setAttribute("data-bs-toggle", "modal");
-            commentBtn.setAttribute("data-bs-target", `#commentForm${feedItem.id}`);
-            btnContainer.appendChild(commentBtn);
-            btnContainer.appendChild(createModalDOM(`commentForm${feedItem.id}`, `New comment for ${feedItem.title} job post.`, parseInt(feedItem.id)))
+            const payload = {
+              id: parseInt(feedItem.id),
+              turnon: likeState
+            }
+            apiCall('job/like', 'PUT', payload);
+          })
+          btnContainer.appendChild(likeBtn);
 
-            const cardText2 = document.createElement("p");
-            cardText2.classList.add("card-text");
+          // Comment button
+          const commentBtn = document.createElement("button");
+          commentBtn.setAttribute("class", "flex-item");
+          commentBtn.setAttribute("class", "btn btn-primary");
+          commentBtn.setAttribute("id", "commentBtn");
+          commentBtn.textContent = "Comment";
+          commentBtn.setAttribute("data-bs-toggle", "modal");
+          commentBtn.setAttribute("data-bs-target", `#commentForm${feedItem.id}`);
+          btnContainer.appendChild(commentBtn);
+          btnContainer.appendChild(createModalDOM(`commentForm${feedItem.id}`, `New comment for ${feedItem.title} job post.`, parseInt(feedItem.id)))
 
-            const cardText2Small = document.createElement("small");
-            cardText2Small.classList.add("text-muted");
-            cardText2Small.textContent = getDate(feedItem.createdAt);
+          const cardText2 = document.createElement("p");
+          cardText2.classList.add("card-text");
 
-            cardText2.appendChild(cardText2Small);
-            cardBody.appendChild(cardTitle);
-            cardBody.appendChild(cardText4);
-            cardBody.appendChild(cardText1);
-            cardBody.appendChild(cardText3);
-            cardBody.appendChild(bottomContainer);
-            cardBody.appendChild(cardText2);
-            card.appendChild(cardImage);
-            card.appendChild(cardBody);
-            document.getElementById('feed-items').appendChild(card);
+          const cardText2Small = document.createElement("small");
+          cardText2Small.classList.add("text-muted");
+          cardText2Small.textContent = getDate(feedItem.createdAt);
+
+          cardText2.appendChild(cardText2Small);
+          cardBody.appendChild(cardTitle);
+          cardBody.appendChild(cardText4);
+          cardBody.appendChild(cardText1);
+          cardBody.appendChild(cardText3);
+          cardBody.appendChild(bottomContainer);
+          cardBody.appendChild(cardText2);
+          card.appendChild(cardImage);
+          card.appendChild(cardBody);
+          document.getElementById('feed-items').appendChild(card);
         }
     });
 };
@@ -1009,8 +1018,21 @@ if (localStorage.getItem('token')) {
     show('section-logged-in');
     hide('section-logged-out');
     populateFeed(0);
+    // Notification
+    setInterval(() => {
+      apiCall('job/feed', 'GET', {}, "?start=0")
+      .then((data) => {
+          data.sort((a, b) => b.createdAt - a.createdAt);
+          if (data[0].id !== newestJobId && foundNew === false) {
+            foundNew = true;
+            getUserData(data[0].creatorId).then((data) => {
+              createAlertForm("alert alert-success", `${data.name} created a new job post!`, "notification");
+            })
+          }
+      });
+    }, 1000)
     //Uncomment this for live feed (it works but screen keeps blinking)
-    // setInterval(() => populateFeed(), 1000);
+    // setInterval(() => populateFeed(0), 1000);
     navigateTab();
     updateProfile();
     backButton();
