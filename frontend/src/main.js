@@ -453,6 +453,19 @@ const createCommentChild = (comment) => {
   return individualComment;
 }
 
+// Create Alert Form DOM
+const createAlertForm = (alert_class, message, id) => {
+  const alertForm = document.createElement('div');
+  alertForm.className = alert_class;
+  alertForm.setAttribute("role", "alert");
+  const alertText = document.createTextNode(message);
+  alertForm.appendChild(alertText);
+  document.getElementById(id).appendChild(alertForm);
+  setTimeout(() => {
+    alertForm.remove();
+  }, 3000)
+}
+
 // Update my profile
 const updateProfile = () => {
   let payload = {
@@ -791,15 +804,7 @@ document.getElementById("create-job-button").addEventListener('click', () => {
   const inputImage = document.getElementById("validatedCustomFile");
 
   if(!inputTitle.value || !inputImage.files[0] || !inputStart.value || !inputDescription.value){
-    const alertForm = document.createElement('div');
-    alertForm.className = "alert alert-danger";
-    alertForm.setAttribute("role", "alert");
-    const alertText = document.createTextNode("No field should be empty! please enter the correct data for each field");
-    alertForm.appendChild(alertText);
-    document.getElementById("alert-form").appendChild(alertForm);
-    setTimeout(() => {
-      alertForm.remove();
-    }, 2000)
+    createAlertForm("alert alert-danger", "No field should be empty! please enter the correct data for each field", "alert-form");
   }else{
     const startDate = new Date(inputStart.value);
     const startDateForm = startDate.toISOString();
@@ -826,27 +831,10 @@ document.getElementById("create-job-button").addEventListener('click', () => {
                 }
               });
         })
-
-        const successForm = document.createElement('div');
-        successForm.className = "alert alert-success";
-        successForm.setAttribute("role", "alert");
-        const successText = document.createTextNode("You have successfully created a job!!:)");
-        successForm.appendChild(successText);
-        document.getElementById("alert-form").appendChild(successForm);
-        setTimeout(() => {
-          successForm.remove();
-        }, 3000)
+        createAlertForm("alert alert-success", "You have successfully created a job!!:)", "alert-form");
       }
       catch(err) {
-          const alertForm = document.createElement('div');
-          alertForm.className = "alert alert-danger";
-          alertForm.setAttribute("role", "alert");
-          const alertText = document.createTextNode(err);
-          alertForm.appendChild(alertText);
-          document.getElementById("alert-form").appendChild(alertForm);
-          setTimeout(() => {
-            alertForm.remove();
-          }, 2000)
+        createAlertForm("alert alert-danger", err, "alert-form");
       }
     }
   }   
@@ -865,43 +853,19 @@ document.getElementById("watch-user-button").addEventListener("click", () => {
 
       apiCall('user/watch', 'PUT', payload)
         .then((data) => {
-          const successForm = document.createElement('div');
-          successForm.className = "alert alert-success";
-          successForm.setAttribute("role", "alert");
-          const successText = document.createTextNode(`Congrats stalker! You are now watching your friend!!:)`);
-          successForm.appendChild(successText);
-          document.getElementById("alert-watch").appendChild(successForm);
-          setTimeout(() => {
-            successForm.remove();
-          }, 3000)
+          createAlertForm( "alert alert-success", "Congrats stalker! You are now watching your friend!!:)", "alert-watch");
           document.getElementById("inputWatchEmail").value = "";
         })
         .catch((data) => {
           console.log(data.error);
           if (!(data instanceof TypeError)) {
-            const alertForm = document.createElement('div');
-            alertForm.className = "alert alert-danger";
-            alertForm.setAttribute("role", "alert");
-            const alertText = document.createTextNode("Wrong email bro, try again...");
-            alertForm.appendChild(alertText);
-            document.getElementById("alert-watch").appendChild(alertForm);
-            setTimeout(() => {
-              alertForm.remove();
-            }, 2000)
+            createAlertForm("alert alert-danger", "Wrong email bro, try again...", "alert-watch");
           } else {
             console.log("Caught some other error: " );
           }
         })
     } else {
-      const alertForm = document.createElement('div');
-      alertForm.className = "alert alert-danger";
-      alertForm.setAttribute("role", "alert");
-      const alertText = document.createTextNode("Watching yourself isn't allowed mate!");
-      alertForm.appendChild(alertText);
-      document.getElementById("alert-watch").appendChild(alertForm);
-      setTimeout(() => {
-        alertForm.remove();
-      }, 2000)
+      createAlertForm("alert alert-danger", "Watching yourself isn't allowed mate!", "alert-watch");
     }
   })
 });
