@@ -1,13 +1,4 @@
-# Assessment 3 - Vanilla JS: LurkForWork
-
-1. Background & Motivation
-2. The Task
-3. Getting Started
-4. Constraints & Assumptions
-5. Marking Criteria
-6. Originality of Work
-7. Submission
-8. Late Submission Policy
+# Assessment 3
 
 ## 0. Change Log
 
@@ -25,9 +16,9 @@ The web-based application you build is required to be a single page app (SPA). S
 
 ## 2. The Task (Frontend)
 
-Your task is to build a frontend for a UNSW rip-off version of the popular professional social networking tool [LinkedIn](https://linkedin.com/). If you haven't used this application before, we would recommend creating your own LinkedIn profile - it's probably good for your career anyway!
+Your task is to build a frontend for a rip-off version of the popular professional social networking tool [LinkedIn](https://linkedin.com/). If you haven't used this application before, we would recommend creating your own LinkedIn profile - it's probably good for your career anyway!
 
-UNSW's rip-off of LinkedIn is called "LurkForWork". However, you don't have to build the entire application. You only have to build the frontend. The backend is already built for you as an express server built in NodeJS (see section 3.2).
+You don't have to build the entire application. You only have to build the frontend. The backend is already built for you as an express server built in NodeJS (see section 3.2).
 
 Instead of providing visuals of what the frontend (your task) should look like, we instead are providing you with a number of clear and short requirements about expected features and behaviours.
 
@@ -346,52 +337,3 @@ Please note: When we test your UI we will use a pre-loaded database JSON that al
     </td>
   </tr>
 </table>
-
-## 6. Originality of Work
-
-The work you submit must be your own work. Submission of work partially or completely derived from
-any other person or jointly written with any other person is not permitted.
-
-The penalties for such an offence may include negative marks, automatic failure of the course and
-possibly other academic discipline. Assignment submissions will be examined both automatically and
-manually for such submissions.
-
-Relevant scholarship authorities will be informed if students holding scholarships are involved in
-an incident of plagiarism or other misconduct.
-
-Do not provide or show your assignment work to any other person &mdash; apart from the teaching
-staff of COMP6080.
-
-If you knowingly provide or show your assignment work to another person for any reason, and work
-derived from it is submitted, you may be penalized, even if the work was submitted without your
-knowledge or consent.  This may apply even if your work is submitted by a third party unknown to
-you.
-
-Every time you make commits or pushes on this repository, you are acknowledging that the work you
-submit is your own work (as described above).
-
-As per the course outline, "Pairs will be required to contribute regularly to gitlab and in reasonably equal contributions as we still assess contributions individually (there is no blanket group mark assigned). Failure to do so may result in a loss of marks."
-
-If you are not working in a pair, we still strongly encourage you to commit small amounts of code regularly. This will assist you in managing any allegations of plagiarism that you feel are not correct.
-
-Note you will not be penalized if your work has the potential to be taken without your consent or
-knowledge.
-
-## 8. Submission
-
-This assignment is due *Monday 27th of March, 10am*.
-
-To submit your assignment, you must complete the following two steps in order:
- * Ensure you've pushed all of your code to your gitlab master branch. You can check if you've done this properly by seeing what code is on the gitlab site on your master branch.
- 
-This will submit the latest commit on master as your submission.
-
-You do NOT have to run a submit command for this assignment (we are experimenting with not using the command).
-
-It is your responsibiltiy to ensure that your code can run successfully when cloned fresh from Gitlab.
-
-For pairs, only one team member needs to submit.
-
-## 8. Late Submission Policy
-
-No late submission are accepted.
